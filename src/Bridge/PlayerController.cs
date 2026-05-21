@@ -8,7 +8,11 @@ namespace Game.Bridge
     {
         [Export] public Camera3D PlayerCamera = null!;
         [Export] public RayCast3D InteractionRay = null!;
-        [Export] public WeaponBridge CurrentWeapon = null!; // Link this in the inspector
+        
+        [Export] public WeaponBridge CurrentWeapon = null!; 
+        // Add this new array to hold your hotbar items
+        [Export] public Godot.Collections.Array<WeaponBridge> Equipment = new Godot.Collections.Array<WeaponBridge>();
+
         
         [Export] public float Speed = 5.0f;
         [Export] public float JumpVelocity = 4.5f;
@@ -21,64 +25,135 @@ namespace Game.Bridge
         }
 
         public override void _Process(double delta)
+{
+    if (GetTree().Paused) return;
+
+    // Interaction (F Key) - ONLY for picking things up
+    if (Input.IsActionJustPressed("interact"))
+    {
+        HandlePickup();
+    }
+
+    // Use Tool / Attack (Left Click)
+    if (Input.IsActionJustPressed("attack"))
+    {
+        HandleToolUse();
+    }
+}
+        private void EquipTool(int slotIndex)
+{
+    // Make sure the slot actually exists in our array
+    if (slotIndex < 0 || slotIndex >= Equipment.Count) return;
+    
+    WeaponBridge selectedTool = Equipment[slotIndex];
+    if (selectedTool == null) return;
+
+    // Hide all tools in the array
+    foreach (WeaponBridge tool in Equipment)
+    {
+        if (tool != null)
         {
-            if (GetTree().Paused) return;
-
-            // Interaction (F Key)
-            if (Input.IsActionJustPressed("interact"))
-            {
-                HandleInteraction();
-            }
-
-            // Attack (Left Click)
-            if (Input.IsActionJustPressed("attack"))
-            {
-                if (CurrentWeapon != null)
-                {
-                    CurrentWeapon.PerformAttack();
-                }
-                else
-                {
-                    GD.Print("[Player] Punching!");
-                }
-            }
+            tool.Visible = false;
         }
+    }
 
+    // Equip and show the selected tool
+    CurrentWeapon = selectedTool;
+    CurrentWeapon.Visible = true;
+    
+    GD.Print($"[Player] Equipped Slot {slotIndex + 1}: {CurrentWeapon.ToolCategory}");
+}
         public override void _Input(InputEvent @event)
-        {
-            if (GetTree().Paused) return;
+{
+    if (GetTree().Paused) return;
 
-            if (@event is InputEventMouseMotion mouseMotion && PlayerCamera != null)
+    // --- Camera Rotation Logic (Existing) ---
+    if (@event is InputEventMouseMotion mouseMotion && PlayerCamera != null)
+    {
+        RotateY(-mouseMotion.Relative.X * MouseSensitivity);
+        PlayerCamera.RotateX(-mouseMotion.Relative.Y * MouseSensitivity);
+        Vector3 rot = PlayerCamera.Rotation;
+        rot.X = Mathf.Clamp(rot.X, -Mathf.Pi / 2, Mathf.Pi / 2);
+        PlayerCamera.Rotation = rot;
+    }
+
+    // --- NEW: Weapon Swapping Logic ---
+    if (@event is InputEventKey keyEvent && keyEvent.Pressed && !keyEvent.Echo)
+    {
+        if (keyEvent.Keycode == Key.Key1) EquipTool(0); // Slot 1 (Weapon)
+        if (keyEvent.Keycode == Key.Key2) EquipTool(1); // Slot 2 (Shovel)
+        if (keyEvent.Keycode == Key.Key3) EquipTool(2); // Slot 3 (Seed)
+        if (keyEvent.Keycode == Key.Key4) EquipTool(3); // Slot 4 (Watering Can)
+        if (keyEvent.Keycode == Key.Key5) EquipTool(4); // Slot 5 (Scythe)
+    }
+}
+
+        private void HandlePickup()
+{
+    if (InteractionRay == null) return;
+
+    InteractionRay.ForceRaycastUpdate();
+    if (InteractionRay.IsColliding())
+    {
+        Node collider = InteractionRay.GetCollider() as Node;
+        
+        // Strictly for picking up items on the ground
+        if (collider != null && collider.HasMethod("InteractAndPickup"))
+        {
+            Variant result = collider.Call("InteractAndPickup");
+            if (result.VariantType != Variant.Type.Nil)
             {
-                RotateY(-mouseMotion.Relative.X * MouseSensitivity);
-                PlayerCamera.RotateX(-mouseMotion.Relative.Y * MouseSensitivity);
-                Vector3 rot = PlayerCamera.Rotation;
-                rot.X = Mathf.Clamp(rot.X, -Mathf.Pi / 2, Mathf.Pi / 2);
-                PlayerCamera.Rotation = rot;
+                ItemResource item = (ItemResource)result.AsGodotObject();
+                InventoryManager.Instance.AddItem(item, 1);
+                GD.Print($"[Player] Picked up: {item.Name}");
             }
         }
+    }
+}
 
-        private void HandleInteraction()
+        private void HandleToolUse()
+{
+    if (CurrentWeapon == null) return;
+
+    string toolCategory = CurrentWeapon.ToolCategory.Trim().ToLower();
+    
+    // 1. Combat Logic
+    if (toolCategory == "weapon")
+    {
+        CurrentWeapon.PerformAttack();
+        return;
+    }
+
+    // 2. Farming Logic
+    if (InteractionRay == null) return;
+    InteractionRay.ForceRaycastUpdate();
+    
+    if (InteractionRay.IsColliding())
+    {
+        Node collider = InteractionRay.GetCollider() as Node;
+        FarmGridBridge hitGarden = FindFarmBridgeParent(collider);
+
+        if (hitGarden != null)
         {
-            if (InteractionRay == null) return;
+            Vector3 hitPoint = InteractionRay.GetCollisionPoint();
+            Vector2I gridCoord = hitGarden.WorldToGridCoordinates(hitPoint);
+            
+            string actionToSend = "";
+            string cropIdToPlant = "";
 
-            InteractionRay.ForceRaycastUpdate();
-            if (InteractionRay.IsColliding())
+            if (toolCategory == "shovel") actionToSend = "Till";
+            else if (toolCategory == "wateringcan") actionToSend = "Water";
+            else if (toolCategory == "seed") { actionToSend = "Plant"; cropIdToPlant = "Carrot"; }
+            else if (toolCategory == "scythe") actionToSend = "Harvest";
+
+            if (!string.IsNullOrEmpty(actionToSend))
             {
-                Node collider = InteractionRay.GetCollider() as Node;
-                if (collider != null && collider.HasMethod("InteractAndPickup"))
-                {
-                    Variant result = collider.Call("InteractAndPickup");
-                    if (result.VariantType != Variant.Type.Nil)
-                    {
-                        ItemResource item = (ItemResource)result.AsGodotObject();
-                        InventoryManager.Instance.AddItem(item, 1);
-                        GD.Print($"[Player] Interaction successful: {item.Name}");
-                    }
-                }
+                hitGarden.Interact(gridCoord, actionToSend, cropIdToPlant);
             }
         }
-
+    }
+}
+        
         public override void _PhysicsProcess(double delta)
         {
             if (GetTree().Paused) return;
@@ -101,6 +176,20 @@ namespace Game.Bridge
             }
             Velocity = velocity;
             MoveAndSlide();
+        }
+        private FarmGridBridge FindFarmBridgeParent(Node node)
+        {
+            // Climb up the scene tree to find the FarmGridBridge
+            Node current = node;
+            while (current != null)
+            {
+                if (current is FarmGridBridge bridge)
+                {
+                    return bridge;
+                }
+                current = current.GetParent();
+            }
+            return null;
         }
     }
 }

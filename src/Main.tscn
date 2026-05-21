@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://dtnntmuqjkgy4" path="res://world_item_medkit.tscn" id="6_k2i6c"]
 [ext_resource type="PackedScene" uid="uid://br65ovqjab54d" path="res://hud.tscn" id="7_0ri8u"]
 [ext_resource type="PackedScene" uid="uid://cyow16xipl8j4" path="res://EscapeMenu.tscn" id="7_38a0m"]
+[ext_resource type="Script" uid="uid://dpi6ksk1tmih" path="res://src/Bridge/FarmGridBridge.cs" id="8_fh42b"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_bow1t"]
 
@@ -116,3 +117,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4460845, 0.51418614, -9.347
 layer = 10
 
 [node name="Control" parent="." unique_id=666235658 instance=ExtResource("7_38a0m")]
+
+[node name="FarmGridBridge" type="Node3D" parent="." unique_id=736811770]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+script = ExtResource("8_fh42b")
+GridWidth = 1
+GridHeight = 1

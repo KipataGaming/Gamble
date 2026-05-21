@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://2jp1r6x26g3i"]
 
 [ext_resource type="Script" uid="uid://n5naj7u3y8ji" path="res://src/Bridge/PlayerController.cs" id="1_0gx41"]
-[ext_resource type="Script" uid="uid://dr6trgavmybcs" path="res://src/Bridge/CombatPlaceholder.cs" id="2_0kad6"]
+[ext_resource type="Script" uid="uid://cdce2ov8y602w" path="res://src/Bridge/WeaponBridge.cs" id="2_0kad6"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_hms8v"]
 
@@ -11,11 +11,12 @@
 
 [sub_resource type="Compositor" id="Compositor_0kad6"]
 
-[node name="CharacterBody3D" type="CharacterBody3D" unique_id=595063796 node_paths=PackedStringArray("PlayerCamera", "InteractionRay", "CurrentWeapon")]
+[node name="CharacterBody3D" type="CharacterBody3D" unique_id=595063796 node_paths=PackedStringArray("PlayerCamera", "InteractionRay", "CurrentWeapon", "Equipment")]
 script = ExtResource("1_0gx41")
 PlayerCamera = NodePath("Node3D/Camera3D")
 InteractionRay = NodePath("Node3D/Camera3D/InteractRayCast")
-CurrentWeapon = NodePath("HandNode")
+CurrentWeapon = NodePath("Node3D/Camera3D/ScytheNode")
+Equipment = [NodePath("Node3D/Camera3D/WeaponNode"), NodePath("Node3D/Camera3D/ShovelNode"), NodePath("Node3D/Camera3D/WateringCanNode"), NodePath("Node3D/Camera3D/SeedNode"), NodePath("Node3D/Camera3D/ScytheNode")]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=866314326]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
@@ -39,5 +40,25 @@ target_position = Vector3(0, 0, -5.5)
 debug_shape_custom_color = Color(0.007843138, 0, 0, 1)
 debug_shape_thickness = 5
 
-[node name="HandNode" type="Node3D" parent="." unique_id=252711234]
+[node name="WeaponNode" type="Node3D" parent="Node3D/Camera3D" unique_id=576866709]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5940175, 0)
 script = ExtResource("2_0kad6")
+
+[node name="ShovelNode" type="Node3D" parent="Node3D/Camera3D" unique_id=792601094]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5940175, 0)
+script = ExtResource("2_0kad6")
+ToolCategory = "Shovel"
+
+[node name="WateringCanNode" type="Node3D" parent="Node3D/Camera3D" unique_id=658620289]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5940175, 0)
+script = ExtResource("2_0kad6")
+ToolCategory = "WateringCan"
+
+[node name="SeedNode" type="Node3D" parent="Node3D/Camera3D" unique_id=252711234]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5940175, 0)
+script = ExtResource("2_0kad6")
+ToolCategory = "Seed"
+
+[node name="ScytheNode" type="Node3D" parent="Node3D/Camera3D" unique_id=2040879951]
+script = ExtResource("2_0kad6")
+ToolCategory = "Scythe"
