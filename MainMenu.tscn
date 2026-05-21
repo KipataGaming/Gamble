@@ -1,0 +1,52 @@
+[gd_scene format=3 uid="uid://bfa1fhmyumft1"]
+
+[ext_resource type="Script" uid="uid://cgkdb2mard7lv" path="res://src/Bridge/MainMenuBridge.cs" id="1_i26rj"]
+
+[node name="MainMenu" type="Control" unique_id=1442156722 node_paths=PackedStringArray("PlayButton", "SettingsButton", "ExitButton", "SettingsMenu")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_i26rj")
+PlayButton = NodePath("PlayButton")
+SettingsButton = NodePath("SettingsButton")
+ExitButton = NodePath("ExitButton")
+SettingsMenu = NodePath("SettingsMenu")
+
+[node name="PlayButton" type="Button" parent="." unique_id=696233933]
+layout_mode = 0
+offset_left = 497.0
+offset_top = 242.0
+offset_right = 643.0
+offset_bottom = 276.0
+text = "PLAY"
+
+[node name="SettingsButton" type="Button" parent="." unique_id=1062496361]
+layout_mode = 0
+offset_left = 499.0
+offset_top = 282.0
+offset_right = 643.0
+offset_bottom = 313.0
+text = "SETTINGS"
+
+[node name="ExitButton" type="Button" parent="." unique_id=1477987209]
+layout_mode = 0
+offset_left = 502.0
+offset_top = 320.0
+offset_right = 644.0
+offset_bottom = 351.0
+text = "EXIT
+"
+
+[node name="SettingsMenu" type="Control" parent="." unique_id=498908781]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="CanvasLayer" type="CanvasLayer" parent="SettingsMenu" unique_id=1445565668]
+
+[connection signal="pressed" from="PlayButton" to="." method="OnPlayPressed"]
+[connection signal="pressed" from="SettingsButton" to="." method="OnSettingsPressed"]
+[connection signal="pressed" from="ExitButton" to="." method="OnExitPressed"]

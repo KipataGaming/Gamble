@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://2jp1r6x26g3i"]
+
+[ext_resource type="Script" uid="uid://n5naj7u3y8ji" path="res://src/Bridge/PlayerController.cs" id="1_0gx41"]
+[ext_resource type="Script" uid="uid://dr6trgavmybcs" path="res://src/Bridge/CombatPlaceholder.cs" id="2_0kad6"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_hms8v"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_7nnrg"]
+
+[sub_resource type="CameraAttributesPhysical" id="CameraAttributesPhysical_0gx41"]
+
+[sub_resource type="Compositor" id="Compositor_0kad6"]
+
+[node name="CharacterBody3D" type="CharacterBody3D" unique_id=595063796 node_paths=PackedStringArray("PlayerCamera", "InteractionRay", "CurrentWeapon")]
+script = ExtResource("1_0gx41")
+PlayerCamera = NodePath("Node3D/Camera3D")
+InteractionRay = NodePath("Node3D/Camera3D/InteractRayCast")
+CurrentWeapon = NodePath("HandNode")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=866314326]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("CapsuleMesh_hms8v")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=730943216]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_7nnrg")
+
+[node name="Node3D" type="Node3D" parent="." unique_id=610009819]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Node3D" unique_id=296300741]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.10598254, 0)
+attributes = SubResource("CameraAttributesPhysical_0gx41")
+compositor = SubResource("Compositor_0kad6")
+
+[node name="InteractRayCast" type="RayCast3D" parent="Node3D/Camera3D" unique_id=2121936952]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.10598254, 0)
+target_position = Vector3(0, 0, -5.5)
+debug_shape_custom_color = Color(0.007843138, 0, 0, 1)
+debug_shape_thickness = 5
+
+[node name="HandNode" type="Node3D" parent="." unique_id=252711234]
+script = ExtResource("2_0kad6")

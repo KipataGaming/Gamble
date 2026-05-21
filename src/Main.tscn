@@ -1,0 +1,118 @@
+[gd_scene format=3 uid="uid://bfqt6nm5adcdv"]
+
+[ext_resource type="Script" uid="uid://bcw12sbv83t0l" path="res://src/Bridge/LocationSetter.cs" id="1_38a0m"]
+[ext_resource type="PackedScene" uid="uid://2jp1r6x26g3i" path="res://src/Resources/player.tscn" id="2_fh42b"]
+[ext_resource type="Script" uid="uid://mfp4kg81lnry" path="res://src/Bridge/SunBridge.cs" id="4_w32tk"]
+[ext_resource type="Script" uid="uid://3vny8lho6vxg" path="res://src/Bridge/InventoryUIBridge.cs" id="5_0vhqb"]
+[ext_resource type="PackedScene" uid="uid://dtnntmuqjkgy4" path="res://world_item_medkit.tscn" id="6_k2i6c"]
+[ext_resource type="PackedScene" uid="uid://br65ovqjab54d" path="res://hud.tscn" id="7_0ri8u"]
+[ext_resource type="PackedScene" uid="uid://cyow16xipl8j4" path="res://EscapeMenu.tscn" id="7_38a0m"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_bow1t"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7se3q"]
+albedo_color = Color(0.6925416, 0.9925721, 0.28594634, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_rqbky"]
+material = SubResource("StandardMaterial3D_7se3q")
+size = Vector2(512, 512)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8wr1t"]
+size = Vector3(512, 1, 512)
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_hms8v"]
+ground_bottom_color = Color(0.10075771, 0.20394126, 0.08295966, 1)
+ground_horizon_color = Color(0.60728824, 0.6186715, 0.6360056, 1)
+
+[sub_resource type="Sky" id="Sky_7nnrg"]
+sky_material = SubResource("ProceduralSkyMaterial_hms8v")
+process_mode = 1
+
+[sub_resource type="Environment" id="Environment_hms8v"]
+background_mode = 2
+background_energy_multiplier = 1.87
+sky = SubResource("Sky_7nnrg")
+ambient_light_source = 3
+ssr_enabled = true
+ssao_enabled = true
+ssil_enabled = true
+sdfgi_enabled = true
+sdfgi_use_occlusion = true
+sdfgi_bounce_feedback = 1.58
+glow_enabled = true
+fog_sun_scatter = 0.33
+fog_density = 0.0341
+volumetric_fog_temporal_reprojection_amount = 0.99
+adjustment_enabled = true
+adjustment_brightness = 0.83
+adjustment_contrast = 1.105
+adjustment_saturation = 2.95
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_7nnrg"]
+
+[sub_resource type="Compositor" id="Compositor_bow1t"]
+
+[node name="Main" type="Node3D" unique_id=194370206]
+script = ExtResource("1_38a0m")
+
+[node name="CharacterBody3D" parent="." unique_id=595063796 instance=ExtResource("2_fh42b")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7253587, 0.5, -0.07812342)
+
+[node name="Node2D" type="Node2D" parent="." unique_id=708019369]
+
+[node name="Ground" type="StaticBody3D" parent="." unique_id=2016149921]
+physics_material_override = SubResource("PhysicsMaterial_bow1t")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground" unique_id=936174937]
+mesh = SubResource("PlaneMesh_rqbky")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground" unique_id=2003607319]
+shape = SubResource("BoxShape3D_8wr1t")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=884360744]
+environment = SubResource("Environment_hms8v")
+camera_attributes = SubResource("CameraAttributesPractical_7nnrg")
+compositor = SubResource("Compositor_bow1t")
+
+[node name="Node3D" type="Node3D" parent="WorldEnvironment" unique_id=1901506280]
+script = ExtResource("4_w32tk")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment/Node3D" unique_id=1719059111]
+shadow_enabled = true
+shadow_bias = 2.1
+shadow_normal_bias = 6.235
+
+[node name="InventoryUI" type="Control" parent="." unique_id=1247934103 node_paths=PackedStringArray("InventoryGrid")]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 43.0
+offset_top = 13.0
+offset_right = 177.0
+offset_bottom = 53.0
+mouse_filter = 2
+script = ExtResource("5_0vhqb")
+InventoryGrid = NodePath("GridContainer")
+
+[node name="GridContainer" type="GridContainer" parent="InventoryUI" unique_id=1370872993]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.4000001
+anchor_top = 5.3500004
+anchor_right = 11.450001
+anchor_bottom = 15.6
+offset_top = -1.5258789e-05
+offset_right = -3.0517578e-05
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 5
+
+[node name="WorldItem_Medkit" parent="." unique_id=1857169169 instance=ExtResource("6_k2i6c")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.44348693, 0.4986725, -4.4206877)
+
+[node name="WorldItem_Medkit2" parent="." unique_id=933750572 instance=ExtResource("6_k2i6c")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4460845, 0.51418614, -9.347707)
+
+[node name="HUD" parent="." unique_id=482326171 instance=ExtResource("7_0ri8u")]
+layer = 10
+
+[node name="Control" parent="." unique_id=666235658 instance=ExtResource("7_38a0m")]

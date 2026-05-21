@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemResource" format=3 uid="uid://cnqk7yphlgvhm"]
+
+[ext_resource type="Script" uid="uid://brxv23pa76vt" path="res://src/Resources/ItemResource.cs" id="1_l28yx"]
+
+[resource]
+script = ExtResource("1_l28yx")
+Id = "medkit_01"
+Name = "First Aid Kit"
+MaxStackSize = 5
+Weight = 2.5
+metadata/_custom_type_script = "uid://brxv23pa76vt"

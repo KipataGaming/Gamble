@@ -1,0 +1,45 @@
+[gd_scene format=3 uid="uid://br65ovqjab54d"]
+
+[ext_resource type="Script" uid="uid://bmai5wpsm7gri" path="res://src/Bridge/HudBridge.cs" id="1_37p78"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_37p78"]
+
+[node name="HUD" type="CanvasLayer" unique_id=482326171 node_paths=PackedStringArray("TemperatureLabel", "TimeLabel", "BodyTempLabel")]
+script = ExtResource("1_37p78")
+TemperatureLabel = NodePath("UIRoot/TemperatureLabel")
+TimeLabel = NodePath("UIRoot/TimeLabel")
+BodyTempLabel = NodePath("UIRoot/BodyTempatureLabel")
+
+[node name="UIRoot" type="Control" parent="." unique_id=255218388]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TemperatureLabel" type="Label" parent="UIRoot" unique_id=1872168857]
+layout_mode = 0
+offset_left = 17.0
+offset_top = 6.0
+offset_right = 203.0
+offset_bottom = 48.0
+text = "Waiting for weather..."
+label_settings = SubResource("LabelSettings_37p78")
+
+[node name="TimeLabel" type="Label" parent="UIRoot" unique_id=283424942]
+layout_mode = 0
+offset_left = 71.0
+offset_top = 36.0
+offset_right = 143.0
+offset_bottom = 70.0
+text = "00:00 Hrs"
+
+[node name="BodyTempatureLabel" type="Label" parent="UIRoot" unique_id=438792297]
+layout_mode = 0
+offset_left = 89.0
+offset_top = 69.0
+offset_right = 130.0
+offset_bottom = 92.0
+text = "98.6F"
