@@ -1,6 +1,6 @@
 // src/Core/AI/IdleState.cs
 using Godot;
-using Game.Bridge.AI;
+using Game.Core;
 
 namespace Game.Core.AI;
 
