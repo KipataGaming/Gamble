@@ -23,7 +23,21 @@ public class ChaseState : IState
 
     public void PhysicsUpdate(double delta)
     {
-        // TODO: Implement chase logic
+        if (_target == null || !GodotObject.IsInstanceValid(_target))
+        {
+            _stateMachine.ChangeState(new PatrolState(_enemy, _stateMachine));
+            return;
+        }
+
+        // Continuously update navigation target to player's position
+        _enemy.SetNavigationTarget(_target.GlobalPosition);
+
+        // Optional: Add simple distance check to give up chase
+        float distance = _enemy.GlobalPosition.DistanceTo(_target.GlobalPosition);
+        if (distance > 15f)
+        {
+            _stateMachine.ChangeState(new PatrolState(_enemy, _stateMachine));
+        }
     }
 
     public void Exit() { }
