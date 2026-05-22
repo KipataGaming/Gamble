@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://br65ovqjab54d" path="res://hud.tscn" id="7_0ri8u"]
 [ext_resource type="PackedScene" uid="uid://cyow16xipl8j4" path="res://EscapeMenu.tscn" id="7_38a0m"]
 [ext_resource type="Script" uid="uid://dpi6ksk1tmih" path="res://src/Bridge/FarmGridBridge.cs" id="8_fh42b"]
+[ext_resource type="Script" uid="uid://bff7n3k82rf7u" path="res://src/Bridge/ResourceNodeBridge.cs" id="9_insap"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_bow1t"]
 
@@ -123,3 +124,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 script = ExtResource("8_fh42b")
 GridWidth = 1
 GridHeight = 1
+
+[node name="Tree" type="Node3D" parent="." unique_id=1704067022]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, 5)
+script = ExtResource("9_insap")
