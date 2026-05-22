@@ -9,7 +9,6 @@ namespace Game.Core;
 public partial class EnemyController : CharacterBody3D, IDamageable
 {
     [Export] public NavigationAgent3D NavAgent = null!;
-    [Export] public StateMachine Brain = null!;
     [Export] public Area3D DetectionZone = null!;
     [Export] public RayCast3D VisionRay = null!;
     
