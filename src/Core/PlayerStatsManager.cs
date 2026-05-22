@@ -79,4 +79,10 @@ public partial class PlayerStatsManager : Node
         GD.Print("[Stats] FATAL DAMAGE! Player has died.");
         // Later, we can tell GameStateManager to pause the game and show a "You Died" screen
     }
+    public void ResetStats()
+    {
+        CurrentHealth = MaxHealth;
+        CurrentStamina = MaxStamina;
+        GD.Print("[Stats] Player stats reset to maximum.");
+    }
 }

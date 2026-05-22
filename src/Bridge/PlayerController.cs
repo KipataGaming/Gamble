@@ -247,11 +247,19 @@ namespace Game.Bridge
 
         // 2. NEW: THE DAMAGE PIPELINE (IDamageable Contract)
         public void TakeDamage(int amount)
+    {
+        // 1. Stop processing damage if we are already dead
+        if (PlayerStatsManager.Instance.CurrentHealth <= 0) return; 
+
+        GD.Print($"[Player] -> HIT! Took {amount} damage.");
+        PlayerStatsManager.Instance.DecreaseHealth(amount);
+
+        // 2. If this hit killed us, destroy the physical body!
+        if (PlayerStatsManager.Instance.CurrentHealth <= 0)
         {
-            GD.Print($"[Player] -> HIT! Took {amount} damage.");
-            
-            
-             PlayerStatsManager.Instance.DecreaseHealth(amount);
+            GD.Print("[Player] -> Removing corpse from world.");
+            QueueFree(); 
         }
+    }
     }
 }

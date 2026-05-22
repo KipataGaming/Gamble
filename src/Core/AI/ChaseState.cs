@@ -1,9 +1,6 @@
 // src/Core/AI/ChaseState.cs
 using Godot;
 using Game.Bridge.AI;
-using Game.Core.AI;
-using Game.Core;
-using Game.Bridge;
 
 namespace Game.Core.AI;
 
@@ -29,10 +26,14 @@ public class ChaseState : IState
 
     public void PhysicsUpdate(double delta)
     {
-        // Safety check in case the player gets deleted/dies
-        if (!GodotObject.IsInstanceValid(_target)) return;
+        // CRITICAL FIX: Change state BEFORE returning
+        if (!GodotObject.IsInstanceValid(_target) || _target.IsQueuedForDeletion())
+        {
+            GD.Print("[AI] -> Target lost (Destroyed). Returning to Idle.");
+            _stateMachine.ChangeState(new IdleState(_enemy, _stateMachine));
+            return;
+        }
 
-        // 1. NEW: If we are within 10 meters and have a clear shot, open fire!
         float distance = _enemy.GlobalPosition.DistanceTo(_target.GlobalPosition);
         if (distance <= 10.0f && _enemy.CanSeeTarget())
         {
@@ -40,21 +41,18 @@ public class ChaseState : IState
             return;
         }
 
-        // 2. Constantly update the GPS to the target's current position
         _enemy.NavAgent.TargetPosition = _target.GlobalPosition;
 
-        // 3. Calculate the path
         Vector3 currentPos = _enemy.GlobalPosition;
         Vector3 nextPos = _enemy.NavAgent.GetNextPathPosition();
         Vector3 direction = (nextPos - currentPos).Normalized();
 
-        // 4. Move the physical body
-        _enemy.Velocity = direction * _enemy.WalkSpeed;
+        _enemy.Velocity = direction * (_enemy.WalkSpeed * 1.5f);
         _enemy.MoveAndSlide();
     }
 
     public void Exit()
     {
-        GD.Print("[AI] -> Target lost. Returning to idle.");
+        GD.Print("[AI] -> Dropping pursuit.");
     }
-}   
+}

@@ -47,6 +47,6 @@ public class PatrolState : IState
         _enemy.Velocity = direction * _enemy.WalkSpeed;
         _enemy.MoveAndSlide();
     }
-
+    
     public void Exit() { }
 }

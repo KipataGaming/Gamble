@@ -43,9 +43,17 @@ target_position = Vector3(0, 0, -5.5)
 debug_shape_custom_color = Color(0.007843138, 0, 0, 1)
 debug_shape_thickness = 5
 
-[node name="WeaponNode" type="Node3D" parent="Node3D/Camera3D" unique_id=576866709]
+[node name="AimRay" type="RayCast3D" parent="Node3D/Camera3D" unique_id=1951189139]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.10598254, 0)
+target_position = Vector3(0, 0, -50)
+debug_shape_custom_color = Color(0.007843138, 0, 0, 1)
+debug_shape_thickness = 5
+
+[node name="WeaponNode" type="Node3D" parent="Node3D/Camera3D" unique_id=576866709 node_paths=PackedStringArray("AimRay")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5940175, 0)
 script = ExtResource("2_0kad6")
+AimRay = NodePath("../AimRay")
+Damage = 82
 
 [node name="ShovelNode" type="Node3D" parent="Node3D/Camera3D" unique_id=792601094]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5940175, 0)
