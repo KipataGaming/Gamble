@@ -1,0 +1,37 @@
+[gd_scene format=3 uid="uid://h4jsfomtuihv"]
+
+[ext_resource type="Script" uid="uid://dek5d1rjhebar" path="res://src/Core/EnemyController.cs" id="1_vi3wq"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_vi3wq"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8j5cv"]
+albedo_color = Color(1, 0.09019608, 0, 1)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_4noky"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_vi3wq"]
+radius = 3.0
+
+[node name="Enemy" type="CharacterBody3D" unique_id=1437758100 node_paths=PackedStringArray("NavAgent", "DetectionZone", "VisionRay")]
+up_direction = Vector3(0, -1, 0)
+script = ExtResource("1_vi3wq")
+NavAgent = NodePath("NavigationAgent3D")
+DetectionZone = NodePath("DetectionZone")
+VisionRay = NodePath("VisionRay")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=166672258]
+mesh = SubResource("CapsuleMesh_vi3wq")
+surface_material_override/0 = SubResource("StandardMaterial3D_8j5cv")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=2028017957]
+shape = SubResource("CapsuleShape3D_4noky")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="." unique_id=1455102678]
+
+[node name="DetectionZone" type="Area3D" parent="." unique_id=246615824]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="DetectionZone" unique_id=1300146077]
+shape = SubResource("SphereShape3D_vi3wq")
+
+[node name="VisionRay" type="RayCast3D" parent="." unique_id=1059131298]
+target_position = Vector3(0, 0, 5)
