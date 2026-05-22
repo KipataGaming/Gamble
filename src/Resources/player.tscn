@@ -16,7 +16,7 @@ script = ExtResource("1_0gx41")
 PlayerCamera = NodePath("Node3D/Camera3D")
 InteractionRay = NodePath("Node3D/Camera3D/InteractRayCast")
 CurrentWeapon = NodePath("Node3D/Camera3D/AxeNode")
-Equipment = [NodePath("Node3D/Camera3D/WeaponNode"), NodePath("Node3D/Camera3D/ShovelNode"), NodePath("Node3D/Camera3D/WateringCanNode"), NodePath("Node3D/Camera3D/SeedNode"), NodePath("Node3D/Camera3D/ScytheNode"), NodePath("Node3D/Camera3D/AxeNode")]
+Equipment = [NodePath("Node3D/Camera3D/WeaponNode"), NodePath("Node3D/Camera3D/ShovelNode"), NodePath("Node3D/Camera3D/WateringCanNode"), NodePath("Node3D/Camera3D/SeedNode"), NodePath("Node3D/Camera3D/ScytheNode"), NodePath("Node3D/Camera3D/AxeNode"), NodePath("Node3D/Camera3D/PickaxeNode")]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=866314326]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
@@ -66,3 +66,7 @@ ToolCategory = "Scythe"
 [node name="AxeNode" type="Node3D" parent="Node3D/Camera3D" unique_id=631668239]
 script = ExtResource("2_0kad6")
 ToolCategory = "Axe"
+
+[node name="PickaxeNode" type="Node3D" parent="Node3D/Camera3D" unique_id=161968851]
+script = ExtResource("2_0kad6")
+ToolCategory = "Pickaxe"

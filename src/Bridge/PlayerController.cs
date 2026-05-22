@@ -87,6 +87,7 @@ namespace Game.Bridge
                 if (keyEvent.Keycode == Key.Key4) EquipTool(3); // Slot 4 (Watering Can)
                 if (keyEvent.Keycode == Key.Key5) EquipTool(4); // Slot 5 (Scythe)
                 if (keyEvent.Keycode == Key.Key6) EquipTool(5); // Slot 6 (Axe)
+                if (keyEvent.Keycode == Key.Key7) EquipTool(6); // Slot 7 (Pickaxe)
             }
         }
 
