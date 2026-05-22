@@ -8,10 +8,7 @@ public partial class InventoryManager : Node
 {
     public static InventoryManager Instance { get; private set; } = null!;
 
-    // The mathematical state of the inventory: Item ID -> Quantity
     private readonly Dictionary<string, int> _inventory = new();
-    
-    // A cache of the actual item data so we can look up weights/names
     private readonly Dictionary<string, ItemResource> _itemDatabase = new();
 
     public override void _EnterTree()
@@ -23,13 +20,11 @@ public partial class InventoryManager : Node
     {
         if (item == null || amount <= 0) return;
 
-        // Ensure the item is tracked in the database
         if (!_itemDatabase.ContainsKey(item.Id))
         {
             _itemDatabase[item.Id] = item;
         }
 
-        // Add to the internal math
         if (_inventory.ContainsKey(item.Id))
         {
             _inventory[item.Id] += amount;
@@ -41,8 +36,8 @@ public partial class InventoryManager : Node
 
         GD.Print($"[Inventory] Added {amount}x {item.Name}. Total: {_inventory[item.Id]}");
         
-        // Notify the rest of the game (e.g., the UI Bridge, the Quest System)
-        EventBroker.TriggerItemCollected(item.Id, amount);
+        // Pass the updated total inventory amount to the EventBroker
+        EventBroker.TriggerItemCollected(item.Id, _inventory[item.Id]);
     }
 
     public bool RemoveItem(string itemId, int amount = 1)
@@ -80,5 +75,15 @@ public partial class InventoryManager : Node
             }
         }
         return totalWeight;
+    }
+
+    // Allows the UI Bridge to ask the core for an item's data (like its Icon)
+    public ItemResource GetItemData(string itemId)
+    {
+        if (_itemDatabase.TryGetValue(itemId, out var itemResource))
+        {
+            return itemResource;
+        }
+        return null;
     }
 }
