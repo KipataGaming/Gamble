@@ -49,7 +49,6 @@ public partial class EnemyController : CharacterBody3D, IDamageable
         {
             Vector3 nextPos = NavAgent.GetNextPathPosition();
 
-            // Only move if we have meaningful distance to avoid zero direction
             if (GlobalPosition.DistanceSquaredTo(nextPos) > 0.5f)
             {
                 Vector3 direction = GlobalPosition.DirectionTo(nextPos);
@@ -113,6 +112,12 @@ public partial class EnemyController : CharacterBody3D, IDamageable
 
         Health -= amount;
         GD.Print($"[Enemy] OUCH! Took {amount} damage. Health: {Health}/100");
+
+        // Immediately retreat when damaged
+        if (_brain != null)
+        {
+            _brain.ChangeState(new RetreatState(this, _brain));
+        }
 
         if (Health <= 0)
             Die();
