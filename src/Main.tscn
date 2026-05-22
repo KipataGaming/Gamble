@@ -24,8 +24,19 @@ size = Vector2(512, 512)
 [sub_resource type="BoxShape3D" id="BoxShape3D_8wr1t"]
 size = Vector3(512, 1, 512)
 
+[sub_resource type="Gradient" id="Gradient_0vhqb"]
+offsets = PackedFloat32Array(0.2542373, 1)
+colors = PackedColorArray(0, 0, 0, 0, 1, 1, 1, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_k2i6c"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_0ri8u"]
+noise = SubResource("FastNoiseLite_k2i6c")
+color_ramp = SubResource("Gradient_0vhqb")
+seamless = true
+
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_hms8v"]
-sky_horizon_color = Color(0.38984045, 0.39734125, 0.41235656, 1)
+sky_cover = SubResource("NoiseTexture2D_0ri8u")
 ground_bottom_color = Color(0.10075771, 0.20394126, 0.08295966, 1)
 ground_horizon_color = Color(0.60728824, 0.6186715, 0.6360056, 1)
 
