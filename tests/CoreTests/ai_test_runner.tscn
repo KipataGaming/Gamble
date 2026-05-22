@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://bkuhqknldpoh1"]
+
+[ext_resource type="Script" uid="uid://dnk55emdybvst" path="res://src/Core/AI/AITestRunner.cs" id="1_vr78k"]
+[ext_resource type="Script" uid="uid://dpcworuy3hh3k" path="res://src/Core/AI/StateMachine.cs" id="2_rew0h"]
+
+[node name="AITestRunner" type="Node" unique_id=1507968380]
+script = ExtResource("1_vr78k")
+
+[node name="StateMachine" type="Node" parent="." unique_id=1107503407]
+script = ExtResource("2_rew0h")

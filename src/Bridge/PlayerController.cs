@@ -4,7 +4,8 @@ using Game.Resources;
 
 namespace Game.Bridge
 {
-    public partial class PlayerController : CharacterBody3D
+    // 1. ADDED the IDamageable contract here
+    public partial class PlayerController : CharacterBody3D, IDamageable
     {
         [Export] public Camera3D PlayerCamera = null!;
         [Export] public RayCast3D InteractionRay = null!;
@@ -115,78 +116,78 @@ namespace Game.Bridge
         }
 
         private void HandleToolUse()
-{
-    if (CurrentWeapon == null) return;
-
-    string toolCategory = CurrentWeapon.ToolCategory.Trim().ToLower();
-    
-    // --- STAMINA COSTS ---
-    float staminaCost = 0f;
-    if (toolCategory == "axe" || toolCategory == "pickaxe") staminaCost = 5f;
-    else if (toolCategory == "shovel" || toolCategory == "wateringcan") staminaCost = 3f;
-    else if (toolCategory == "scythe" || toolCategory == "weapon") staminaCost = 2f;
-    else if (toolCategory == "seed") staminaCost = 1f;
-
-    // 1. Combat Logic
-    if (toolCategory == "weapon")
-    {
-        if (PlayerStatsManager.Instance.TryConsumeStamina(staminaCost))
         {
-            CurrentWeapon.PerformAttack();
-        }
-        return;
-    }
+            if (CurrentWeapon == null) return;
 
-    // 2. Interaction Raycast Update
-    if (InteractionRay == null) return;
-    InteractionRay.ForceRaycastUpdate();
-    
-    if (InteractionRay.IsColliding())
-    {
-        Node collider = InteractionRay.GetCollider() as Node;
-
-        // Resource Gathering Logic (Trees / Rocks)
-        ResourceNodeBridge hitResource = FindResourceBridgeParent(collider);
-        if (hitResource != null)
-        {
-            if (toolCategory == "axe")
-            {
-                if (PlayerStatsManager.Instance.TryConsumeStamina(staminaCost)) hitResource.Interact("Chop");
-                return; 
-            }
-            else if (toolCategory == "pickaxe")
-            {
-                if (PlayerStatsManager.Instance.TryConsumeStamina(staminaCost)) hitResource.Interact("Mine");
-                return; 
-            }
-        }
-
-        // Farming Logic
-        FarmGridBridge hitGarden = FindFarmBridgeParent(collider);
-        if (hitGarden != null)
-        {
-            Vector3 hitPoint = InteractionRay.GetCollisionPoint();
-            Vector2I gridCoord = hitGarden.WorldToGridCoordinates(hitPoint);
+            string toolCategory = CurrentWeapon.ToolCategory.Trim().ToLower();
             
-            string actionToSend = "";
-            string cropIdToPlant = "";
+            // --- STAMINA COSTS ---
+            float staminaCost = 0f;
+            if (toolCategory == "axe" || toolCategory == "pickaxe") staminaCost = 5f;
+            else if (toolCategory == "shovel" || toolCategory == "wateringcan") staminaCost = 3f;
+            else if (toolCategory == "scythe" || toolCategory == "weapon") staminaCost = 2f;
+            else if (toolCategory == "seed") staminaCost = 1f;
 
-            if (toolCategory == "shovel") actionToSend = "Till";
-            else if (toolCategory == "wateringcan") actionToSend = "Water";
-            else if (toolCategory == "seed") { actionToSend = "Plant"; cropIdToPlant = "Carrot"; }
-            else if (toolCategory == "scythe") actionToSend = "Harvest";
-
-            if (!string.IsNullOrEmpty(actionToSend))
+            // 1. Combat Logic
+            if (toolCategory == "weapon")
             {
-                // Only interact with the farm if we have the stamina to do it
                 if (PlayerStatsManager.Instance.TryConsumeStamina(staminaCost))
                 {
-                    hitGarden.Interact(gridCoord, actionToSend, cropIdToPlant);
+                    CurrentWeapon.PerformAttack();
+                }
+                return;
+            }
+
+            // 2. Interaction Raycast Update
+            if (InteractionRay == null) return;
+            InteractionRay.ForceRaycastUpdate();
+            
+            if (InteractionRay.IsColliding())
+            {
+                Node collider = InteractionRay.GetCollider() as Node;
+
+                // Resource Gathering Logic (Trees / Rocks)
+                ResourceNodeBridge hitResource = FindResourceBridgeParent(collider);
+                if (hitResource != null)
+                {
+                    if (toolCategory == "axe")
+                    {
+                        if (PlayerStatsManager.Instance.TryConsumeStamina(staminaCost)) hitResource.Interact("Chop");
+                        return; 
+                    }
+                    else if (toolCategory == "pickaxe")
+                    {
+                        if (PlayerStatsManager.Instance.TryConsumeStamina(staminaCost)) hitResource.Interact("Mine");
+                        return; 
+                    }
+                }
+
+                // Farming Logic
+                FarmGridBridge hitGarden = FindFarmBridgeParent(collider);
+                if (hitGarden != null)
+                {
+                    Vector3 hitPoint = InteractionRay.GetCollisionPoint();
+                    Vector2I gridCoord = hitGarden.WorldToGridCoordinates(hitPoint);
+                    
+                    string actionToSend = "";
+                    string cropIdToPlant = "";
+
+                    if (toolCategory == "shovel") actionToSend = "Till";
+                    else if (toolCategory == "wateringcan") actionToSend = "Water";
+                    else if (toolCategory == "seed") { actionToSend = "Plant"; cropIdToPlant = "Carrot"; }
+                    else if (toolCategory == "scythe") actionToSend = "Harvest";
+
+                    if (!string.IsNullOrEmpty(actionToSend))
+                    {
+                        // Only interact with the farm if we have the stamina to do it
+                        if (PlayerStatsManager.Instance.TryConsumeStamina(staminaCost))
+                        {
+                            hitGarden.Interact(gridCoord, actionToSend, cropIdToPlant);
+                        }
+                    }
                 }
             }
         }
-    }
-}
         
         public override void _PhysicsProcess(double delta)
         {
@@ -242,6 +243,15 @@ namespace Game.Bridge
                 current = current.GetParent();
             }
             return null;
+        }
+
+        // 2. NEW: THE DAMAGE PIPELINE (IDamageable Contract)
+        public void TakeDamage(int amount)
+        {
+            GD.Print($"[Player] -> HIT! Took {amount} damage.");
+            
+            
+             PlayerStatsManager.Instance.DecreaseHealth(amount);
         }
     }
 }

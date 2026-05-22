@@ -1,0 +1,105 @@
+[gd_scene format=3 uid="uid://cjry4fgyjkm24"]
+
+[ext_resource type="PackedScene" uid="uid://h4jsfomtuihv" path="res://src/Core/AI/enemy.tscn" id="1_waasl"]
+[ext_resource type="PackedScene" uid="uid://2jp1r6x26g3i" path="res://src/Resources/player.tscn" id="2_0jsp4"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_0jsp4"]
+noise_type = 3
+seed = 42069
+frequency = 0.0567
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_ch1ul"]
+width = 2048
+height = 2048
+noise = SubResource("FastNoiseLite_0jsp4")
+seamless = true
+invert = true
+in_3d_space = true
+seamless_blend_skirt = 0.451
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_pdpbp"]
+sky_curve = 0.06529136
+sky_energy_multiplier = 1.77
+sky_cover = SubResource("NoiseTexture2D_ch1ul")
+sky_cover_modulate = Color(0.99999946, 0.9893088, 0.70296806, 1)
+ground_bottom_color = Color(0.00089801435, 0.0006525249, 0.00042917134, 1)
+ground_horizon_color = Color(0.15125969, 0.15510467, 0.16280338, 1)
+sun_angle_max = 360.0
+
+[sub_resource type="Sky" id="Sky_2jj1y"]
+sky_material = SubResource("ProceduralSkyMaterial_pdpbp")
+process_mode = 3
+radiance_size = 6
+
+[sub_resource type="Environment" id="Environment_ln152"]
+background_mode = 2
+sky = SubResource("Sky_2jj1y")
+ambient_light_source = 3
+ambient_light_energy = 0.25
+volumetric_fog_enabled = true
+volumetric_fog_albedo = Color(0.9607843, 1, 1, 1)
+volumetric_fog_emission_energy = 83.47
+volumetric_fog_anisotropy = -0.05
+volumetric_fog_length = 71.75
+volumetric_fog_detail_spread = 1.1095693
+adjustment_enabled = true
+adjustment_brightness = 0.53
+adjustment_contrast = 1.15
+adjustment_saturation = 1.48
+
+[sub_resource type="CameraAttributesPhysical" id="CameraAttributesPhysical_isu1d"]
+exposure_multiplier = 2.557
+auto_exposure_enabled = true
+frustum_focus_distance = 50.0
+frustum_focal_length = 100.0
+frustum_near = 0.5
+frustum_far = 8000.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0jsp4"]
+shading_mode = 2
+diffuse_mode = 3
+specular_mode = 1
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_epcrs"]
+vertices = PackedVector3Array(-9.5, 0.5, -9.5, -9.5, 0.5, 9.5, 9.5, 0.5, 9.5, 9.5, 0.5, -9.5)
+polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
+
+[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_0jsp4"]
+albedo_color = Color(0.38431373, 1, 0.02745098, 1)
+clearcoat_enabled = true
+clearcoat_roughness = 0.0
+ao_enabled = true
+ao_light_affect = 1.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_ch1ul"]
+material = SubResource("ORMMaterial3D_0jsp4")
+size = Vector2(20, 20)
+
+[node name="TestArena" type="Node3D" unique_id=1793812777]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=239952901]
+environment = SubResource("Environment_ln152")
+camera_attributes = SubResource("CameraAttributesPhysical_isu1d")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment" unique_id=1940418203]
+light_specular = 16.0
+shadow_enabled = true
+
+[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=1377275212]
+use_collision = true
+size = Vector3(20, 0, 20)
+material = SubResource("StandardMaterial3D_0jsp4")
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="CSGBox3D" unique_id=368843688]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.49, 0)
+navigation_mesh = SubResource("NavigationMesh_epcrs")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CSGBox3D" unique_id=1344897016]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.074454784, 0)
+mesh = SubResource("PlaneMesh_ch1ul")
+
+[node name="Enemy" parent="." unique_id=1437758100 instance=ExtResource("1_waasl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.38063, 0)
+
+[node name="Player" parent="." unique_id=595063796 groups=["Player"] instance=ExtResource("2_0jsp4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2949407, 0.5568538, 6.0681086)

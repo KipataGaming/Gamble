@@ -28,6 +28,10 @@ PlayerStatsManager="*uid://bmsoljp13br3p"
 
 project/assembly_name="Game"
 
+[global_group]
+
+Player=""
+
 [input]
 
 ui_close_dialog={
