@@ -44,18 +44,20 @@ public partial class EnemyController : CharacterBody3D, IDamageable
         if (NavAgent.IsNavigationFinished())
         {
             Velocity = Vector3.Zero;
-            // GD.Print("[Enemy] Navigation finished or no path");
         }
         else
         {
             Vector3 nextPos = NavAgent.GetNextPathPosition();
-            Vector3 direction = GlobalPosition.DirectionTo(nextPos);
-            Velocity = direction * WalkSpeed;
 
-            // Debug every ~1 second
-            if (Engine.GetPhysicsFrames() % 60 == 0)
+            // Only move if we have meaningful distance to avoid zero direction
+            if (GlobalPosition.DistanceSquaredTo(nextPos) > 0.5f)
             {
-                GD.Print($"[Enemy] Moving toward: {nextPos} | Velocity: {Velocity}");
+                Vector3 direction = GlobalPosition.DirectionTo(nextPos);
+                Velocity = direction * WalkSpeed;
+            }
+            else
+            {
+                Velocity = Vector3.Zero;
             }
         }
 
