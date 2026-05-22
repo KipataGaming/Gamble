@@ -44,12 +44,19 @@ public partial class EnemyController : CharacterBody3D, IDamageable
         if (NavAgent.IsNavigationFinished())
         {
             Velocity = Vector3.Zero;
+            // GD.Print("[Enemy] Navigation finished or no path");
         }
         else
         {
             Vector3 nextPos = NavAgent.GetNextPathPosition();
             Vector3 direction = GlobalPosition.DirectionTo(nextPos);
             Velocity = direction * WalkSpeed;
+
+            // Debug every ~1 second
+            if (Engine.GetPhysicsFrames() % 60 == 0)
+            {
+                GD.Print($"[Enemy] Moving toward: {nextPos} | Velocity: {Velocity}");
+            }
         }
 
         MoveAndSlide();
@@ -60,6 +67,7 @@ public partial class EnemyController : CharacterBody3D, IDamageable
         if (NavAgent != null)
         {
             NavAgent.TargetPosition = targetPosition;
+            GD.Print($"[Enemy] New navigation target set: {targetPosition}");
         }
     }
 
