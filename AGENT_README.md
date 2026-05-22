@@ -22,7 +22,7 @@
 - "Agent: DevPair — Prepare a small changelist to fix null-checks in `PlayerController` and run tests"
 
 - Workflow suggestions:
-   1. Ask the agent nicely for a proposed diff or patch.
+   1. Ask the agent for a proposed diff or patch.
    2. Review changes locally; run `dotnet format` and tests.
    3. Approve and push to `feature/*` branch and open a PR.
 
