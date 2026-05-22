@@ -2,8 +2,10 @@
 
 [ext_resource type="Script" uid="uid://bcw12sbv83t0l" path="res://src/Bridge/LocationSetter.cs" id="1_38a0m"]
 [ext_resource type="PackedScene" uid="uid://2jp1r6x26g3i" path="res://src/Resources/player.tscn" id="2_fh42b"]
+[ext_resource type="Script" uid="uid://tpcsgd1u0ye7" path="res://src/Bridge/EnvironmentBridge.cs" id="3_0vhqb"]
 [ext_resource type="Script" uid="uid://mfp4kg81lnry" path="res://src/Bridge/SunBridge.cs" id="4_w32tk"]
 [ext_resource type="Script" uid="uid://3vny8lho6vxg" path="res://src/Bridge/InventoryUIBridge.cs" id="5_0vhqb"]
+[ext_resource type="Script" uid="uid://ct6p80qysbmbh" path="res://src/Bridge/StatsUIBridge.cs" id="5_w32tk"]
 [ext_resource type="PackedScene" uid="uid://dtnntmuqjkgy4" path="res://world_item_medkit.tscn" id="6_k2i6c"]
 [ext_resource type="PackedScene" uid="uid://br65ovqjab54d" path="res://hud.tscn" id="7_0ri8u"]
 [ext_resource type="PackedScene" uid="uid://cyow16xipl8j4" path="res://EscapeMenu.tscn" id="7_38a0m"]
@@ -23,6 +25,7 @@ size = Vector2(512, 512)
 size = Vector3(512, 1, 512)
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_hms8v"]
+sky_horizon_color = Color(0.38984045, 0.39734125, 0.41235656, 1)
 ground_bottom_color = Color(0.10075771, 0.20394126, 0.08295966, 1)
 ground_horizon_color = Color(0.60728824, 0.6186715, 0.6360056, 1)
 
@@ -32,23 +35,14 @@ process_mode = 1
 
 [sub_resource type="Environment" id="Environment_hms8v"]
 background_mode = 2
-background_energy_multiplier = 1.87
 sky = SubResource("Sky_7nnrg")
 ambient_light_source = 3
-ssr_enabled = true
-ssao_enabled = true
-ssil_enabled = true
-sdfgi_enabled = true
 sdfgi_use_occlusion = true
 sdfgi_bounce_feedback = 1.58
-glow_enabled = true
 fog_sun_scatter = 0.33
 fog_density = 0.0341
 volumetric_fog_temporal_reprojection_amount = 0.99
 adjustment_enabled = true
-adjustment_brightness = 0.83
-adjustment_contrast = 1.105
-adjustment_saturation = 2.95
 
 [sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_7nnrg"]
 
@@ -75,9 +69,11 @@ shape = SubResource("BoxShape3D_8wr1t")
 environment = SubResource("Environment_hms8v")
 camera_attributes = SubResource("CameraAttributesPractical_7nnrg")
 compositor = SubResource("Compositor_bow1t")
+script = ExtResource("3_0vhqb")
 
-[node name="Node3D" type="Node3D" parent="WorldEnvironment" unique_id=1901506280]
+[node name="Node3D" type="Node3D" parent="WorldEnvironment" unique_id=1901506280 node_paths=PackedStringArray("SunLight")]
 script = ExtResource("4_w32tk")
+SunLight = NodePath("DirectionalLight3D")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment/Node3D" unique_id=1719059111]
 shadow_enabled = true
@@ -117,7 +113,26 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4460845, 0.51418614, -9.347
 [node name="HUD" parent="." unique_id=482326171 instance=ExtResource("7_0ri8u")]
 layer = 10
 
+[node name="StaminaBar" type="ProgressBar" parent="HUD" unique_id=340034189]
+offset_left = 35.0
+offset_top = 97.0
+offset_right = 175.0
+offset_bottom = 124.0
+script = ExtResource("5_w32tk")
+
+[node name="Label" type="Label" parent="HUD/StaminaBar" unique_id=398253976]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 22.0
+offset_right = 155.0
+offset_bottom = 47.0
+text = "STAMINA"
+
 [node name="Control" parent="." unique_id=666235658 instance=ExtResource("7_38a0m")]
+offset_left = 3.0
+offset_top = 2.0
+offset_right = 3.0
+offset_bottom = 2.0
 
 [node name="FarmGridBridge" type="Node3D" parent="." unique_id=736811770]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)

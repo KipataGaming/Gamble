@@ -64,7 +64,7 @@ namespace Game.Core
                 }
                 
                 var localTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone);
-                GameTime = localTime.Hour + (localTime.Minute / 60.0f);
+                GameTime = localTime.Hour + (localTime.Minute / 60.0f) + (localTime.Second / 3600.0f);
             } catch {
                 GameTime = DateTime.Now.Hour + (DateTime.Now.Minute / 60.0f);
             }

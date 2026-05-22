@@ -39,4 +39,10 @@ public static class EventBroker
     {
         OnEnemyDefeated?.Invoke(enemyId);
     }
+    public static event System.Action<float, float> OnStaminaChanged; // Current, Max
+
+    public static void TriggerStaminaChanged(float current, float max)
+    {
+        OnStaminaChanged?.Invoke(current, max);
+    }
 }

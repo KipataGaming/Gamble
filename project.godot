@@ -22,6 +22,7 @@ WeatherManager="*uid://dk26p3s1tf6eg"
 InventoryManager="*uid://dxv42fclpemtv"
 CombatManager="*uid://bv2n1ru2hbvfm"
 TimeManager="*uid://dxwhgune1yg60"
+PlayerStatsManager="*uid://bmsoljp13br3p"
 
 [dotnet]
 

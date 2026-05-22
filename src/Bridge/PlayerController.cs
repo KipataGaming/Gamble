@@ -115,64 +115,78 @@ namespace Game.Bridge
         }
 
         private void HandleToolUse()
+{
+    if (CurrentWeapon == null) return;
+
+    string toolCategory = CurrentWeapon.ToolCategory.Trim().ToLower();
+    
+    // --- STAMINA COSTS ---
+    float staminaCost = 0f;
+    if (toolCategory == "axe" || toolCategory == "pickaxe") staminaCost = 5f;
+    else if (toolCategory == "shovel" || toolCategory == "wateringcan") staminaCost = 3f;
+    else if (toolCategory == "scythe" || toolCategory == "weapon") staminaCost = 2f;
+    else if (toolCategory == "seed") staminaCost = 1f;
+
+    // 1. Combat Logic
+    if (toolCategory == "weapon")
+    {
+        if (PlayerStatsManager.Instance.TryConsumeStamina(staminaCost))
         {
-            if (CurrentWeapon == null) return;
+            CurrentWeapon.PerformAttack();
+        }
+        return;
+    }
 
-            string toolCategory = CurrentWeapon.ToolCategory.Trim().ToLower();
-            
-            // 1. Combat Logic
-            if (toolCategory == "weapon")
+    // 2. Interaction Raycast Update
+    if (InteractionRay == null) return;
+    InteractionRay.ForceRaycastUpdate();
+    
+    if (InteractionRay.IsColliding())
+    {
+        Node collider = InteractionRay.GetCollider() as Node;
+
+        // Resource Gathering Logic (Trees / Rocks)
+        ResourceNodeBridge hitResource = FindResourceBridgeParent(collider);
+        if (hitResource != null)
+        {
+            if (toolCategory == "axe")
             {
-                CurrentWeapon.PerformAttack();
-                return;
+                if (PlayerStatsManager.Instance.TryConsumeStamina(staminaCost)) hitResource.Interact("Chop");
+                return; 
             }
-
-            // 2. Interaction Raycast Update
-            if (InteractionRay == null) return;
-            InteractionRay.ForceRaycastUpdate();
-            
-            if (InteractionRay.IsColliding())
+            else if (toolCategory == "pickaxe")
             {
-                Node collider = InteractionRay.GetCollider() as Node;
+                if (PlayerStatsManager.Instance.TryConsumeStamina(staminaCost)) hitResource.Interact("Mine");
+                return; 
+            }
+        }
 
-                // --- NEW: Resource Gathering Logic (Trees / Rocks) ---
-                ResourceNodeBridge hitResource = FindResourceBridgeParent(collider);
-                if (hitResource != null)
+        // Farming Logic
+        FarmGridBridge hitGarden = FindFarmBridgeParent(collider);
+        if (hitGarden != null)
+        {
+            Vector3 hitPoint = InteractionRay.GetCollisionPoint();
+            Vector2I gridCoord = hitGarden.WorldToGridCoordinates(hitPoint);
+            
+            string actionToSend = "";
+            string cropIdToPlant = "";
+
+            if (toolCategory == "shovel") actionToSend = "Till";
+            else if (toolCategory == "wateringcan") actionToSend = "Water";
+            else if (toolCategory == "seed") { actionToSend = "Plant"; cropIdToPlant = "Carrot"; }
+            else if (toolCategory == "scythe") actionToSend = "Harvest";
+
+            if (!string.IsNullOrEmpty(actionToSend))
+            {
+                // Only interact with the farm if we have the stamina to do it
+                if (PlayerStatsManager.Instance.TryConsumeStamina(staminaCost))
                 {
-                    if (toolCategory == "axe")
-                    {
-                        hitResource.Interact("Chop");
-                        return; // Stop running code so we don't accidentally farm dirt underneath
-                    }
-                    else if (toolCategory == "pickaxe")
-                    {
-                        hitResource.Interact("Mine");
-                        return; // Stop here for rocks too
-                    }
-                }
-
-                // --- EXISTING: Farming Logic ---
-                FarmGridBridge hitGarden = FindFarmBridgeParent(collider);
-                if (hitGarden != null)
-                {
-                    Vector3 hitPoint = InteractionRay.GetCollisionPoint();
-                    Vector2I gridCoord = hitGarden.WorldToGridCoordinates(hitPoint);
-                    
-                    string actionToSend = "";
-                    string cropIdToPlant = "";
-
-                    if (toolCategory == "shovel") actionToSend = "Till";
-                    else if (toolCategory == "wateringcan") actionToSend = "Water";
-                    else if (toolCategory == "seed") { actionToSend = "Plant"; cropIdToPlant = "Carrot"; }
-                    else if (toolCategory == "scythe") actionToSend = "Harvest";
-
-                    if (!string.IsNullOrEmpty(actionToSend))
-                    {
-                        hitGarden.Interact(gridCoord, actionToSend, cropIdToPlant);
-                    }
+                    hitGarden.Interact(gridCoord, actionToSend, cropIdToPlant);
                 }
             }
         }
+    }
+}
         
         public override void _PhysicsProcess(double delta)
         {
