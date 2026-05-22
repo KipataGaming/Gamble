@@ -13,7 +13,7 @@ public partial class EnemyController : CharacterBody3D, IDamageable
     [Export] public RayCast3D VisionRay = null!;
     
     [Export] public float FieldOfView = 90.0f;
-    public float WalkSpeed = 3.0f;
+    [Export] public float WalkSpeed = 3.0f;
 
     public Node3D PotentialTarget { get; private set; }
 
@@ -30,15 +30,35 @@ public partial class EnemyController : CharacterBody3D, IDamageable
         DetectionZone.BodyEntered += OnBodyEntered;
         DetectionZone.BodyExited += OnBodyExited;
 
-        // Create pure StateMachine and initialize with starting state
         _brain = new StateMachine();
         _brain.Initialize(new IdleState(this, _brain));
     }
 
     public override void _PhysicsProcess(double delta)
     {
-        // This is the handshake: Controller drives the Brain every physics tick
         _brain?.PhysicsUpdate(delta);
+
+        // Basic movement handling using NavigationAgent
+        if (NavAgent != null && NavAgent.IsTargetReached() == false)
+        {
+            Vector3 nextPos = NavAgent.GetNextPathPosition();
+            Vector3 direction = (nextPos - GlobalPosition).Normalized();
+            Velocity = direction * WalkSpeed;
+            MoveAndSlide();
+        }
+        else
+        {
+            Velocity = Vector3.Zero;
+            MoveAndSlide();
+        }
+    }
+
+    public void SetNavigationTarget(Vector3 targetPosition)
+    {
+        if (NavAgent != null)
+        {
+            NavAgent.TargetPosition = targetPosition;
+        }
     }
 
     private void OnBodyEntered(Node3D body)
