@@ -38,19 +38,21 @@ public partial class EnemyController : CharacterBody3D, IDamageable
     {
         _brain?.PhysicsUpdate(delta);
 
-        // Basic movement handling using NavigationAgent
-        if (NavAgent != null && NavAgent.IsTargetReached() == false)
+        if (NavAgent == null)
+            return;
+
+        if (NavAgent.IsNavigationFinished())
         {
-            Vector3 nextPos = NavAgent.GetNextPathPosition();
-            Vector3 direction = (nextPos - GlobalPosition).Normalized();
-            Velocity = direction * WalkSpeed;
-            MoveAndSlide();
+            Velocity = Vector3.Zero;
         }
         else
         {
-            Velocity = Vector3.Zero;
-            MoveAndSlide();
+            Vector3 nextPos = NavAgent.GetNextPathPosition();
+            Vector3 direction = GlobalPosition.DirectionTo(nextPos);
+            Velocity = direction * WalkSpeed;
         }
+
+        MoveAndSlide();
     }
 
     public void SetNavigationTarget(Vector3 targetPosition)
