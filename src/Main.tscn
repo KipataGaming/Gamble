@@ -11,18 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://cyow16xipl8j4" path="res://EscapeMenu.tscn" id="7_38a0m"]
 [ext_resource type="Script" uid="uid://dpi6ksk1tmih" path="res://src/Bridge/FarmGridBridge.cs" id="8_fh42b"]
 [ext_resource type="Script" uid="uid://bff7n3k82rf7u" path="res://src/Bridge/ResourceNodeBridge.cs" id="9_insap"]
-
-[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_bow1t"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7se3q"]
-albedo_color = Color(0.6925416, 0.9925721, 0.28594634, 1)
-
-[sub_resource type="PlaneMesh" id="PlaneMesh_rqbky"]
-material = SubResource("StandardMaterial3D_7se3q")
-size = Vector2(512, 512)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_8wr1t"]
-size = Vector3(512, 1, 512)
+[ext_resource type="PackedScene" uid="uid://h4jsfomtuihv" path="res://src/Core/AI/enemy.tscn" id="12_k2i6c"]
 
 [sub_resource type="Gradient" id="Gradient_0vhqb"]
 offsets = PackedFloat32Array(0.2542373, 1)
@@ -59,23 +48,29 @@ adjustment_enabled = true
 
 [sub_resource type="Compositor" id="Compositor_bow1t"]
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_k2i6c"]
+albedo_color = Color(0.4392157, 0.6039216, 0, 1)
+
+[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_0jsp4"]
+albedo_color = Color(0.38431373, 1, 0.02745098, 1)
+clearcoat_enabled = true
+ao_enabled = true
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_0ri8u"]
+material = SubResource("ORMMaterial3D_0jsp4")
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_y60b8"]
+vertices = PackedVector3Array(-0.5, 0.5361619, -0.5, -0.5, 0.5361619, 0.5, 0.5, 0.5361619, 0.5, 0.5, 0.5361619, -0.5)
+polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
+
 [node name="Main" type="Node3D" unique_id=194370206]
 script = ExtResource("1_38a0m")
 SelectedCity = 5
 
-[node name="CharacterBody3D" parent="." unique_id=595063796 instance=ExtResource("2_fh42b")]
+[node name="Player" parent="." unique_id=595063796 instance=ExtResource("2_fh42b")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7253587, 0.5, -0.07812342)
 
 [node name="Node2D" type="Node2D" parent="." unique_id=708019369]
-
-[node name="Ground" type="StaticBody3D" parent="." unique_id=2016149921]
-physics_material_override = SubResource("PhysicsMaterial_bow1t")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground" unique_id=936174937]
-mesh = SubResource("PlaneMesh_rqbky")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground" unique_id=2003607319]
-shape = SubResource("BoxShape3D_8wr1t")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=884360744]
 environment = SubResource("Environment_hms8v")
@@ -117,10 +112,10 @@ theme_override_constants/v_separation = 10
 columns = 5
 
 [node name="WorldItem_Medkit" parent="." unique_id=1857169169 instance=ExtResource("6_k2i6c")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.44348693, 0.4986725, -4.4206877)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1.265, -4.421)
 
 [node name="WorldItem_Medkit2" parent="." unique_id=933750572 instance=ExtResource("6_k2i6c")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4460845, 0.51418614, -9.347707)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4460845, 1.2888898, -9.347707)
 
 [node name="HUD" parent="." unique_id=482326171 instance=ExtResource("7_0ri8u")]
 layer = 10
@@ -160,3 +155,20 @@ script = ExtResource("9_insap")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 1, 0)
 script = ExtResource("9_insap")
 ResourceType = "Rock"
+
+[node name="Enemy" parent="." unique_id=1437758100 instance=ExtResource("12_k2i6c")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.0653558, 1.5, -12.916075)
+
+[node name="Floor2" type="CSGBox3D" parent="." unique_id=407894156]
+transform = Transform3D(1.92, 0, 0, 0, 1.92, 0, 0, 0, 1.92, 0, 0, 0)
+use_collision = true
+size = Vector3(20, 0, 20)
+material = SubResource("StandardMaterial3D_k2i6c")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor2" unique_id=1970280198]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0.40072948, 0)
+mesh = SubResource("PlaneMesh_0ri8u")
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="Floor2" unique_id=667755940]
+transform = Transform3D(20, 0, 0, 0, 20, 0, 0, 0, 20, 0, -10.32765, 0)
+navigation_mesh = SubResource("NavigationMesh_y60b8")

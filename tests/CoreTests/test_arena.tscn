@@ -55,13 +55,13 @@ frustum_far = 8000.0
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0jsp4"]
 albedo_color = Color(0.4392157, 0.6039216, 0, 1)
 
-[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_0jsp4"]
+[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_ch1ul"]
 albedo_color = Color(0.38431373, 1, 0.02745098, 1)
 clearcoat_enabled = true
 ao_enabled = true
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_ch1ul"]
-material = SubResource("ORMMaterial3D_0jsp4")
+material = SubResource("ORMMaterial3D_ch1ul")
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_ch1ul"]
 vertices = PackedVector3Array(-0.5, 0.5361619, -0.5, -0.5, 0.5361619, 0.5, 0.5, 0.5361619, 0.5, 0.5, 0.5361619, -0.5)
