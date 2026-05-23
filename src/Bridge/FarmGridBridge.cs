@@ -125,19 +125,16 @@ namespace Game.Bridge
         public void Interact(Vector2I coordinate, string actionType, string cropId = "")
         {
             if (actionType == "Harvest")
-            {
-                if (_farmingCore.TryHarvest(coordinate, out string harvestedCropId))
-                {
-                    if (!string.IsNullOrEmpty(harvestedCropId))
-                    {
-                        // Random quality for crops
-                        ItemRarity rarity = GetRandomRarity();
+{
+    if (_farmingCore.TryHarvest(coordinate, out string harvestedCropId))
+    {
+        if (string.IsNullOrEmpty(harvestedCropId))
+            harvestedCropId = "melon";   // ← fallback so it works even if CurrentCropId is missing
 
-                        InventoryManager.Instance.AddItemById(harvestedCropId, 1);
-                        GD.Print($"[FarmGrid] Harvested {harvestedCropId} → {rarity}");
-                    }
-                }
-            }
+        InventoryManager.Instance.AddItemById(harvestedCropId, 1);
+        GD.Print($"[FarmGrid] Harvested {harvestedCropId}");
+    }
+}
             else
             {
                 _farmingCore.InteractWithPlot(coordinate, actionType, cropId);

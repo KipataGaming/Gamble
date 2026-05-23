@@ -20,38 +20,33 @@ public partial class InventoryManager : Node
 {
     if (item == null || amount <= 0) return;
 
-    if (!_itemDatabase.ContainsKey(item.Id))
-    {
-        _itemDatabase[item.Id] = item;
-    }
+    if (!_inventory.ContainsKey(item.Id))
+        _inventory[item.Id] = 0;
 
-    if (_inventory.ContainsKey(item.Id))
-    {
-        _inventory[item.Id] += amount;
-    }
-    else
-    {
-        _inventory[item.Id] = amount;
-    }
+    _inventory[item.Id] += amount;
 
     GD.Print($"[Inventory] Added {amount}x {item.Name}. Total: {_inventory[item.Id]}");
 
-    // THIS LINE WAS MISSING OR NOT ALWAYS FIRING
     EventBroker.TriggerItemCollected(item.Id, _inventory[item.Id]);
 }
-    public void AddItemById(string itemId, int amount = 1)
+     public void AddItemById(string itemId, int amount = 1)
 {
     ItemResource item = GetItemData(itemId);
 
     if (item == null)
     {
-        GD.PrintErr($"[InventoryManager] No ItemResource found for '{itemId}'");
-        return;
+        // Create a temporary item so it still goes into inventory and triggers UI
+        item = new ItemResource
+        {
+            Id = itemId,
+            Name = itemId.Capitalize()
+        };
+        GD.PrintErr($"[InventoryManager] WARNING: No .tres found for '{itemId}'. Using fallback.");
     }
 
     AddItem(item, amount);
 }
-    public bool RemoveItem(string itemId, int amount = 1)
+        public bool RemoveItem(string itemId, int amount = 1)
     {
         if (!_inventory.ContainsKey(itemId) || _inventory[itemId] < amount)
         {

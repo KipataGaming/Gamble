@@ -34,7 +34,7 @@ public partial class InventoryUIBridge : Control
 
     private void HandleItemCollected(string itemId, int quantity)
     {
-        GD.Print($"[InventoryUI] Received item: {itemId} x{quantity}");
+        GD.Print($"[InventoryUI] EVENT RECEIVED for {itemId}");
 
         if (InventoryGrid == null)
         {
