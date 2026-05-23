@@ -85,4 +85,5 @@ public partial class PlayerStatsManager : Node
         CurrentStamina = MaxStamina;
         GD.Print("[Stats] Player stats reset to maximum.");
     }
+
 }

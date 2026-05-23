@@ -1,6 +1,4 @@
 // src/Core/EnemyController.cs
-// Bridge layer - owns physical representation, sensors, and drives the Brain
-
 using Godot;
 using Game.Core.AI;
 
@@ -12,7 +10,7 @@ public partial class EnemyController : CharacterBody3D, IDamageable
     [Export] public Area3D DetectionZone = null!;
     [Export] public RayCast3D VisionRay = null!;
     
-    [Export] public float FieldOfView = 90.0f;   // back to normal
+    [Export] public float FieldOfView = 90.0f;
     [Export] public float WalkSpeed = 3.0f;
 
     public Node3D PotentialTarget { get; private set; }
@@ -20,6 +18,8 @@ public partial class EnemyController : CharacterBody3D, IDamageable
     public int Health = 100;
 
     private StateMachine _brain;
+    private double _staggerTimer = 0.0;           // How long the enemy is "staggered" after being shot
+    private bool _isStaggered => _staggerTimer > 0.0;
 
     public override void _Ready()
     {
@@ -37,10 +37,20 @@ public partial class EnemyController : CharacterBody3D, IDamageable
     {
         _brain?.PhysicsUpdate(delta);
 
+        _staggerTimer -= delta;
+
         if (NavAgent == null) return;
 
-        if (NavAgent.IsNavigationFinished())
+        if (_isStaggered)
+        {
+            // During stagger: stop all navigation movement
+            NavAgent.TargetPosition = GlobalPosition;
             Velocity = Vector3.Zero;
+        }
+        else if (NavAgent.IsNavigationFinished())
+        {
+            Velocity = Vector3.Zero;
+        }
         else
         {
             Vector3 nextPos = NavAgent.GetNextPathPosition();
@@ -50,7 +60,9 @@ public partial class EnemyController : CharacterBody3D, IDamageable
                 Velocity = direction * WalkSpeed;
             }
             else
+            {
                 Velocity = Vector3.Zero;
+            }
         }
 
         MoveAndSlide();
@@ -58,10 +70,9 @@ public partial class EnemyController : CharacterBody3D, IDamageable
 
     public void SetNavigationTarget(Vector3 targetPosition)
     {
-        if (NavAgent != null)
+        if (NavAgent != null && !_isStaggered)
         {
             NavAgent.TargetPosition = targetPosition;
-            GD.Print($"[Enemy] New navigation target set: {targetPosition}");
         }
     }
 
@@ -83,13 +94,10 @@ public partial class EnemyController : CharacterBody3D, IDamageable
             return false;
 
         float distance = GlobalPosition.DistanceTo(PotentialTarget.GlobalPosition);
-
         Vector3 directionToTarget = GlobalPosition.DirectionTo(PotentialTarget.GlobalPosition);
-        Vector3 forward = GlobalTransform.Basis.Z;   // ← FLIPPED (was backwards)
+        Vector3 forward = GlobalTransform.Basis.Z;
 
         float angle = Mathf.RadToDeg(forward.AngleTo(directionToTarget));
-
-        GD.Print($"[CanSeeTarget] Dist: {distance:F1}m | Angle: {angle:F1}° (FOV half: {FieldOfView/2:F1}°)");
 
         if (angle > FieldOfView / 2f)
             return false;
@@ -110,9 +118,18 @@ public partial class EnemyController : CharacterBody3D, IDamageable
         Health -= amount;
         GD.Print($"[Enemy] OUCH! Took {amount} damage. Health: {Health}/100");
 
+        // === STRONG HIT REACTION ===
         if (PotentialTarget != null)
+        {
+            // Face the shooter instantly (only once)
             LookAt(PotentialTarget.GlobalPosition, Vector3.Up);
+            RotateY(Mathf.Pi);
+        }
 
+        // Stagger the enemy so navigation doesn't fight the rotation
+        _staggerTimer = 0.85;   // 0.85 seconds of "hit stun"
+
+        // Force immediate retreat
         _brain?.ChangeState(new RetreatState(this, _brain));
 
         if (Health <= 0)
