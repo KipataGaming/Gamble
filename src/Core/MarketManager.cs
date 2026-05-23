@@ -1,5 +1,5 @@
 using Godot;
-using System.Collections.Generic;
+using Game.Resources;
 
 namespace Game.Core;
 
@@ -7,23 +7,34 @@ public class MarketManager
 {
     public static MarketManager Instance { get; private set; } = new MarketManager();
 
-    // Base sell prices (we can move this to a config/resource later)
-    private readonly Dictionary<string, int> _baseSellPrices = new()
-    {
-        ["wood"]  = 5,
-        ["rock"]  = 8,
-        ["melon"] = 12
-    };
-
+    /// <summary>
+    /// Price the player receives when selling this item to the shop.
+    /// </summary>
     public int GetSellPrice(ItemResource item)
+{
+    if (item == null) return 0;
+
+    return item.Id switch
     {
-        if (item == null) return 0;
+        "wood"  => 8,
+        "rock"  => 12,
+        "melon" => 20,
+        _       => 5
+    };
+}
 
-        int basePrice = _baseSellPrices.GetValueOrDefault(item.Id, 5);
-        float multiplier = item.GetValueMultiplier(); // uses your existing rarity system
+public int GetBuyPrice(ItemResource item)
+{
+    if (item == null) return 0;
 
-        return Mathf.RoundToInt(basePrice * multiplier);
-    }
+    return item.Id switch
+    {
+        "wood"  => 15,
+        "rock"  => 25,
+        "melon" => 40,
+        _       => 10
+    };
+}
 
     public bool SellItem(string itemId, int quantity = 1)
     {
@@ -37,6 +48,21 @@ public class MarketManager
         PlayerStatsManager.Instance.AddMoney(totalPrice);
 
         GD.Print($"[Market] Sold {quantity}x {item.Name} for {totalPrice} money");
+        return true;
+    }
+
+    public bool BuyItem(string itemId, int quantity = 1)
+    {
+        var item = InventoryManager.Instance.GetItemData(itemId);
+        if (item == null) return false;
+
+        int totalPrice = GetBuyPrice(item) * quantity;
+
+        if (!PlayerStatsManager.Instance.TrySpend(totalPrice))
+            return false;
+
+        InventoryManager.Instance.AddItem(item, quantity);
+        GD.Print($"[Market] Bought {quantity}x {item.Name} for {totalPrice} money");
         return true;
     }
 }

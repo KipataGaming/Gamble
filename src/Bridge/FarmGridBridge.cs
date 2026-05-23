@@ -126,14 +126,34 @@ namespace Game.Bridge
         {
             if (actionType == "Harvest")
 {
-    if (_farmingCore.TryHarvest(coordinate, out string harvestedCropId))
-    {
-        if (string.IsNullOrEmpty(harvestedCropId))
-            harvestedCropId = "melon";   // ← fallback so it works even if CurrentCropId is missing
+    string harvestedCropId = "melon";
 
-        InventoryManager.Instance.AddItemById(harvestedCropId, 1);
-        GD.Print($"[FarmGrid] Harvested {harvestedCropId}");
+    if (_farmingCore.TryHarvest(coordinate, out string realId) && !string.IsNullOrEmpty(realId))
+    {
+        harvestedCropId = realId;
     }
+
+    // Apply random rarity to melon (same as wood/rock)
+    ItemRarity rarity = GetRandomRarity();
+
+    var item = InventoryManager.Instance.GetItemData(harvestedCropId);
+    if (item != null)
+    {
+        // We temporarily override rarity for this drop
+        item.Rarity = rarity;
+    }
+
+    InventoryManager.Instance.AddItemById(harvestedCropId, 1);
+    GD.Print($"[FarmGrid] Harvested {harvestedCropId} → {rarity}");
+}
+            else if (actionType == "Chop" || actionType == "Mine")
+            {
+                // This is a bit hacky but it allows us to reuse the same resource node logic for trees/rocks on the farm grid
+                string resourceType = actionType == "Chop" ? "tree" : "rock";
+                var tempNode = new ResourceNodeBridge { ResourceType = resourceType, MaxHealth = 3 };
+                AddChild(tempNode);
+                tempNode.Interact(actionType);
+                tempNode.QueueFree();
 }
             else
             {

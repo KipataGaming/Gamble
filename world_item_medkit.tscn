@@ -1,9 +1,10 @@
 [gd_scene format=3 uid="uid://dtnntmuqjkgy4"]
 
-[ext_resource type="Script" uid="uid://dfwicev5fxpjt" path="res://src/Bridge/WorldItemBridge.cs" id="1_1lh1b"]
-[ext_resource type="Resource" uid="uid://cnqk7yphlgvhm" path="res://src/Resources/medkit.tres" id="2_ky35j"]
+[ext_resource type="Script" uid="uid://blfn5etyjf6rw" path="res://src/resources/ItemResource.cs" id="1_pu3j5"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_1lh1b"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_1lh1b"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_qi6tc"]
 size = Vector3(0.9321747, 1, 0.93499756)
@@ -12,8 +13,10 @@ size = Vector3(0.9321747, 1, 0.93499756)
 
 [node name="WorldItem_Medkit" type="RigidBody3D" unique_id=1857169169]
 physics_material_override = SubResource("PhysicsMaterial_1lh1b")
-script = ExtResource("1_1lh1b")
-ItemData = ExtResource("2_ky35j")
+script = ExtResource("1_pu3j5")
+Id = "medkit"
+Name = "MedKit"
+Icon = SubResource("PlaceholderTexture2D_1lh1b")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1960206517]
 process_mode = 3

@@ -10,12 +10,50 @@ public partial class InventoryManager : Node
 
     private readonly Dictionary<string, int> _inventory = new();
     private readonly Dictionary<string, ItemResource> _itemDatabase = new();
+public float MaxStamina { get; private set; } = 100f;
+public float CurrentStamina { get; private set; }
 
+public int MaxHealth { get; private set; } = 100;
+public int CurrentHealth { get; private set; }     // ← Add this if missing
+
+public int CurrentMoney { get; private set; } = 0; // ← You already added this
     public override void _EnterTree()
-    {
-        Instance = this;
-    }
+{
+    Instance = this;
 
+    CurrentStamina = MaxStamina;
+    CurrentHealth = MaxHealth;
+    CurrentMoney = 0;
+
+    // Load all ItemResource .tres files from res://resources/
+    var dir = DirAccess.Open("res://resources");
+    if (dir != null)
+    {
+        dir.ListDirBegin();
+        string fileName = dir.GetNext();
+
+        while (fileName != "")
+        {
+            if (!dir.CurrentIsDir() && fileName.EndsWith(".tres"))
+            {
+                string path = "res://resources/" + fileName;
+                var resource = GD.Load<ItemResource>(path);
+
+                if (resource != null && !string.IsNullOrEmpty(resource.Id))
+                {
+                    _itemDatabase[resource.Id] = resource;
+                    GD.Print($"[InventoryManager] Loaded item: {resource.Id}");
+                }
+            }
+            fileName = dir.GetNext();
+        }
+        dir.ListDirEnd();
+    }
+}
+public Dictionary<string, int> GetAllItems()
+{
+    return new Dictionary<string, int>(_inventory);
+}
     public void AddItem(ItemResource item, int amount = 1)
 {
     if (item == null || amount <= 0) return;
@@ -35,35 +73,34 @@ public partial class InventoryManager : Node
 
     if (item == null)
     {
-        // Create a temporary item so it still goes into inventory and triggers UI
+        // Create fallback AND add it to the database so GetItemData can find it later
         item = new ItemResource
         {
             Id = itemId,
             Name = itemId.Capitalize()
         };
+
+        _itemDatabase[itemId] = item;   // ← This line was missing
+
         GD.PrintErr($"[InventoryManager] WARNING: No .tres found for '{itemId}'. Using fallback.");
     }
 
+    
     AddItem(item, amount);
 }
         public bool RemoveItem(string itemId, int amount = 1)
-    {
-        if (!_inventory.ContainsKey(itemId) || _inventory[itemId] < amount)
-        {
-            GD.PrintErr($"[Inventory] Failed to remove {amount}x {itemId}. Not enough in stock.");
-            return false; 
-        }
+{
+    if (!_inventory.ContainsKey(itemId)) return false;
+    if (_inventory[itemId] < amount) return false;
 
-        _inventory[itemId] -= amount;
-        
-        if (_inventory[itemId] <= 0)
-        {
-            _inventory.Remove(itemId);
-        }
+    _inventory[itemId] -= amount;
 
-        GD.Print($"[Inventory] Removed {amount}x {itemId}.");
-        return true;
-    }
+    if (_inventory[itemId] <= 0)
+        _inventory.Remove(itemId);
+
+    GD.Print($"[Inventory] Removed {amount}x {itemId}. Remaining: {_inventory.GetValueOrDefault(itemId, 0)}");
+    return true;
+}
     
     public int GetItemCount(string itemId)
     {
@@ -85,11 +122,22 @@ public partial class InventoryManager : Node
 
     // Allows the UI Bridge to ask the core for an item's data (like its Icon)
     public ItemResource GetItemData(string itemId)
+{
+    // First try the loaded dictionary
+    if (_itemDatabase.TryGetValue(itemId, out var itemResource))
     {
-        if (_itemDatabase.TryGetValue(itemId, out var itemResource))
-        {
-            return itemResource;
-        }
-        return null;
+        return itemResource;
     }
+
+    // Fallback: try to load it directly from disk
+    string path = $"res://resources/{itemId}.tres";
+    var loaded = GD.Load<ItemResource>(path);
+    if (loaded != null)
+    {
+        _itemDatabase[itemId] = loaded;
+        return loaded;
+    }
+
+    return null;
+}
 }

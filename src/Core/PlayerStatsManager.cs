@@ -12,7 +12,7 @@ public partial class PlayerStatsManager : Node
     public int MaxHealth { get; private set; } = 100;
     public int CurrentHealth { get; private set; }
 
-    // NEW: Currency
+    
     public int CurrentMoney { get; private set; } = 0;
 
     public override void _EnterTree()
@@ -53,6 +53,7 @@ public partial class PlayerStatsManager : Node
     {
         CurrentHealth = MaxHealth;
         CurrentStamina = MaxStamina;
+        CurrentMoney = 0;
     }
 
     // ===== NEW CURRENCY SYSTEM =====

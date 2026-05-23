@@ -1,0 +1,40 @@
+[gd_scene format=3 uid="uid://dupnaaqrhh0l6"]
+
+[ext_resource type="Script" uid="uid://bgjvd425li8gu" path="res://src/Bridge/MarketUI.cs" id="1_k5nhb"]
+
+[node name="MarketUI" type="Control" unique_id=2105530063 node_paths=PackedStringArray("SellList", "BuyList")]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_k5nhb")
+SellList = NodePath("HBoxContainer/SellPanel/SellList")
+BuyList = NodePath("HBoxContainer/BuyPanel/BuyList")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1172486631]
+layout_mode = 0
+offset_right = 1152.0
+offset_bottom = 646.0
+alignment = 1
+
+[node name="SellPanel" type="VBoxContainer" parent="HBoxContainer" unique_id=831983251]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HBoxContainer/SellPanel" unique_id=1761443093]
+layout_mode = 2
+text = "Sell"
+
+[node name="SellList" type="VBoxContainer" parent="HBoxContainer/SellPanel" unique_id=1657548378]
+layout_mode = 2
+
+[node name="BuyPanel" type="VBoxContainer" parent="HBoxContainer" unique_id=1114555288]
+layout_mode = 2
+alignment = 2
+
+[node name="Label" type="Label" parent="HBoxContainer/BuyPanel" unique_id=1626419246]
+layout_mode = 2
+text = "Buy"
+
+[node name="BuyList" type="VBoxContainer" parent="HBoxContainer/BuyPanel" unique_id=1558433314]
+layout_mode = 2
+alignment = 1

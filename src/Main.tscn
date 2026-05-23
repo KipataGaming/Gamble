@@ -1,18 +1,16 @@
 [gd_scene format=3 uid="uid://bfqt6nm5adcdv"]
 
 [ext_resource type="Script" uid="uid://bcw12sbv83t0l" path="res://src/Bridge/LocationSetter.cs" id="1_38a0m"]
-[ext_resource type="PackedScene" uid="uid://2jp1r6x26g3i" path="res://src/Resources/player.tscn" id="2_fh42b"]
+[ext_resource type="PackedScene" uid="uid://2jp1r6x26g3i" path="res://src/resources/player.tscn" id="2_fh42b"]
 [ext_resource type="Script" uid="uid://tpcsgd1u0ye7" path="res://src/Bridge/EnvironmentBridge.cs" id="3_0vhqb"]
 [ext_resource type="Script" uid="uid://mfp4kg81lnry" path="res://src/Bridge/SunBridge.cs" id="4_w32tk"]
 [ext_resource type="Script" uid="uid://3vny8lho6vxg" path="res://src/Bridge/InventoryUIBridge.cs" id="5_0vhqb"]
 [ext_resource type="Script" uid="uid://ct6p80qysbmbh" path="res://src/Bridge/StatsUIBridge.cs" id="5_w32tk"]
-[ext_resource type="PackedScene" uid="uid://dtnntmuqjkgy4" path="res://world_item_medkit.tscn" id="6_k2i6c"]
 [ext_resource type="PackedScene" uid="uid://br65ovqjab54d" path="res://hud.tscn" id="7_0ri8u"]
 [ext_resource type="PackedScene" uid="uid://cyow16xipl8j4" path="res://EscapeMenu.tscn" id="7_38a0m"]
 [ext_resource type="Script" uid="uid://dpi6ksk1tmih" path="res://src/Bridge/FarmGridBridge.cs" id="8_fh42b"]
-[ext_resource type="PackedScene" uid="uid://cktv63wn4msgg" path="res://src/Resources/tree.tscn" id="12_0ri8u"]
 [ext_resource type="PackedScene" uid="uid://h4jsfomtuihv" path="res://src/Bridge/AI/enemy.tscn" id="12_k2i6c"]
-[ext_resource type="PackedScene" uid="uid://cs00kllwh431q" path="res://src/rock.tscn" id="13_y60b8"]
+[ext_resource type="PackedScene" uid="uid://dupnaaqrhh0l6" path="res://market_ui.tscn" id="14_y60b8"]
 
 [sub_resource type="Gradient" id="Gradient_0vhqb"]
 offsets = PackedFloat32Array(0.2542373, 1)
@@ -51,17 +49,12 @@ adjustment_enabled = true
 
 [sub_resource type="LabelSettings" id="LabelSettings_k2i6c"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_k2i6c"]
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_0ri8u"]
-
 [sub_resource type="NavigationMesh" id="NavigationMesh_k2i6c"]
 vertices = PackedVector3Array(-99.5, 1, -99.5, -99.5, 1, 99.5, 99.5, 1, 99.5, 99.5, 1, -99.5)
 polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
 
 [node name="Main" type="Node3D" unique_id=194370206]
 script = ExtResource("1_38a0m")
-SelectedCity = 5
 
 [node name="Player" parent="." unique_id=595063796 instance=ExtResource("2_fh42b")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7253587, 0.5, -0.07812342)
@@ -170,18 +163,6 @@ theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
 columns = 4
 
-[node name="WorldItem_Medkit" parent="." unique_id=1857169169 instance=ExtResource("6_k2i6c")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1.4189986, -4.421)
-
-[node name="CollisionShape3D2" type="CollisionShape3D" parent="WorldItem_Medkit" unique_id=1288737127]
-shape = SubResource("BoxShape3D_k2i6c")
-
-[node name="WorldItem_Medkit2" parent="." unique_id=933750572 instance=ExtResource("6_k2i6c")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4460845, 1.3070191, -9.347707)
-
-[node name="CollisionShape3D2" type="CollisionShape3D" parent="WorldItem_Medkit2" unique_id=2087065160]
-shape = SubResource("BoxShape3D_0ri8u")
-
 [node name="HUD" parent="." unique_id=482326171 instance=ExtResource("7_0ri8u")]
 layer = 10
 
@@ -208,20 +189,4 @@ navigation_mesh = SubResource("NavigationMesh_k2i6c")
 use_collision = true
 size = Vector3(200, 1, 200)
 
-[node name="Tree" parent="." unique_id=926203851 instance=ExtResource("12_0ri8u")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.6300116, 0.50000024, 1.4052156)
-
-[node name="Tree2" parent="." unique_id=1823068747 instance=ExtResource("12_0ri8u")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.873425, 0.50000024, -6.3852825)
-
-[node name="Tree3" parent="." unique_id=2130527759 instance=ExtResource("12_0ri8u")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.866877, 0.50000024, -18.28613)
-
-[node name="Rock" parent="." unique_id=208947840 instance=ExtResource("13_y60b8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.034981, 0.5, 3.3872344)
-
-[node name="Rock2" parent="." unique_id=394208976 instance=ExtResource("13_y60b8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6126318, 0.50000024, -1.8706865)
-
-[node name="Rock3" parent="." unique_id=465199878 instance=ExtResource("13_y60b8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8481846, 0.50000024, 2.1182826)
+[node name="MarketUI" parent="." unique_id=2105530063 instance=ExtResource("14_y60b8")]

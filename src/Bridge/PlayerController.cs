@@ -72,9 +72,22 @@ namespace Game.Bridge
                 if (keyEvent2.Keycode == Key.Key5) EquipTool(4);
                 if (keyEvent2.Keycode == Key.Key6) EquipTool(5);
                 if (keyEvent2.Keycode == Key.Key7) EquipTool(6);
-            }
+                // === TEST: Press M to sell 1 wood ===
+    if (keyEvent2.Keycode == Key.M)
+    {
+        bool sold = MarketManager.Instance.SellItem("wood", 1);
+        GD.Print(sold ? "[TEST] Sold 1 wood!" : "[TEST] Could not sell wood");
+    }
+        if (keyEvent2.Keycode == Key.B)
+{
+    // Toggle Market UI
+    var market = GetTree().Root.GetNodeOrNull<MarketUI>("/root/MarketUI");
+    if (market != null)
+        market.Visible = !market.Visible;
+}
+    }
         }
-
+      
         public override void _PhysicsProcess(double delta)
         {
             if (GetTree().Paused || _isDead) return;
