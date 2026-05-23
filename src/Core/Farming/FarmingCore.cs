@@ -10,7 +10,7 @@ namespace Game.Core
         public event Action<Vector2I, GrowthStage, string> OnCropStateChanged;
 
         private Dictionary<Vector2I, FarmPlotData> _grid = new Dictionary<Vector2I, FarmPlotData>();
-
+        
         public void InitializeGrid(int width, int height)
         {
             for (int x = 0; x < width; x++)
@@ -52,7 +52,23 @@ namespace Game.Core
                     
             }
         }
+    public bool TryHarvest(Vector2I coordinate, out string harvestedCropId)
+{
+    harvestedCropId = null;
 
+    if (!_grid.TryGetValue(coordinate, out FarmPlotData plot))
+        return false;
+
+    // Try to harvest
+    if (plot.TryHarvest())
+    {
+        harvestedCropId = plot.CurrentCropId;   // This is what gets added to inventory
+        OnCropStateChanged?.Invoke(coordinate, plot.Crop, plot.CurrentCropId);
+        return true;
+    }
+
+    return false;
+}
         public void SimulateDayPassing()
         {
             foreach (var kvp in _grid)

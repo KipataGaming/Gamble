@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cktv63wn4msgg"]
+
+[ext_resource type="Script" uid="uid://bff7n3k82rf7u" path="res://src/Bridge/ResourceNodeBridge.cs" id="1_1cd2s"]
+
+[node name="Tree" type="Node3D" unique_id=926203851]
+script = ExtResource("1_1cd2s")

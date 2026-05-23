@@ -1,7 +1,8 @@
+// src/Bridge/InventoryUIBridge.cs
 using Godot;
 using System.Collections.Generic;
 using Game.Core;
-using Game.Resources; // Required so the bridge can understand ItemResource
+using Game.Resources;
 
 namespace Game.Bridge;
 
@@ -9,12 +10,16 @@ public partial class InventoryUIBridge : Control
 {
     [Export] public GridContainer InventoryGrid = null!;
 
-    // Tracker to remember the exact Label node for every item on screen
-    private Dictionary<string, Label> _inventorySlots = new Dictionary<string, Label>();
+    private Dictionary<string, Control> _slots = new Dictionary<string, Control>();
 
     public override void _Ready()
     {
-        EventBroker.OnItemCollected += HandleItemCollected;
+        GD.Print("[InventoryUI] Ready - Grid assigned? " + (InventoryGrid != null));
+
+        if (InventoryGrid != null)
+            InventoryGrid.Columns = 5;
+
+        EventBroker.OnItemCollected += HandleItemCollected;   // ← This line was missing
     }
 
     public override void _ExitTree()
@@ -25,68 +30,39 @@ public partial class InventoryUIBridge : Control
     public override void _UnhandledInput(InputEvent @event)
     {
         if (@event.IsActionPressed("inventory"))
-        {
-            Visible = !Visible; 
-            Input.MouseMode = Visible ? Input.MouseModeEnum.Visible : Input.MouseModeEnum.Captured;
-        }
+            Visible = !Visible;
     }
 
     private void HandleItemCollected(string itemId, int quantity)
-{
-    if (InventoryGrid == null) return;
-
-    // Ask the Core for the item's data to grab the Icon
-    ItemResource itemData = InventoryManager.Instance.GetItemData(itemId);
-    Texture2D itemIcon = itemData?.Icon;
-    string displayName = itemData != null ? itemData.Name : itemId;
-
-    // 1. If slot exists, just update the number
-    if (_inventorySlots.TryGetValue(itemId, out Label existingLabel))
     {
-        existingLabel.Text = $"{quantity}";
-        GD.Print($"[UI Bridge] Updated existing slot for: {displayName} (New Total: {quantity})");
-        return; 
+        GD.Print($"[InventoryUI] Received: {itemId} x{quantity}");
+
+        if (InventoryGrid == null)
+        {
+            GD.PrintErr("[InventoryUI] InventoryGrid is NOT assigned in Inspector!");
+            return;
+        }
+
+        // Big, bright green slot so we can see it clearly
+        var slot = new PanelContainer();
+        slot.CustomMinimumSize = new Vector2(110, 110);
+
+        var style = new StyleBoxFlat();
+        style.BgColor = new Color(0, 1, 0, 0.7f);
+        style.BorderWidthBottom = 8;
+        style.BorderColor = Colors.White;
+        slot.AddThemeStyleboxOverride("panel", style);
+
+        var label = new Label();
+        label.Text = $"{itemId}\nx{quantity}";
+        label.HorizontalAlignment = HorizontalAlignment.Center;
+        label.VerticalAlignment = VerticalAlignment.Center;
+        label.AddThemeFontSizeOverride("font_size", 18);
+        slot.AddChild(label);
+
+        InventoryGrid.AddChild(slot);
+        _slots[itemId] = slot;
+
+        GD.Print($"[InventoryUI] Created visible slot for {itemId}");
     }
-
-    // 2. If it DOES NOT exist, build a brand new slot
-    var slot = new Panel();
-    slot.CustomMinimumSize = new Vector2(80, 80); 
-
-    // 3. Render the Icon Image
-    if (itemIcon != null)
-    {
-        var iconRect = new TextureRect();
-        iconRect.Texture = itemIcon;
-        iconRect.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize; 
-        iconRect.StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered; 
-        iconRect.SetAnchorsPreset(Control.LayoutPreset.FullRect);
-        
-        // Use Offsets instead of SetMargin (Top, Left, Bottom, Right)
-        iconRect.OffsetLeft = 10;
-        iconRect.OffsetTop = 10;
-        iconRect.OffsetRight = -10;
-        iconRect.OffsetBottom = -10;
-        
-        slot.AddChild(iconRect);
-    }
-
-    // 4. Render the Quantity Text (Bottom Right Corner)
-    var label = new Label();
-    label.Text = $"{quantity}";
-    label.HorizontalAlignment = HorizontalAlignment.Right;
-    label.VerticalAlignment = VerticalAlignment.Bottom;
-    label.SetAnchorsPreset(Control.LayoutPreset.FullRect);
-    
-    // Use Offsets for the label
-    label.OffsetRight = -5;
-    label.OffsetBottom = -5;
-
-    slot.AddChild(label);
-    InventoryGrid.AddChild(slot);
-    
-    // 5. Save this label into our tracker
-    _inventorySlots[itemId] = label;
-    
-    GD.Print($"[UI Bridge] Rendered NEW grid slot with Icon for: {displayName}");
-}
 }
