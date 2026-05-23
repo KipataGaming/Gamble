@@ -11,9 +11,9 @@ public class ChaseState : IState
     private readonly Node3D _target;
 
     private double _attackTimer = 0.0;
-    private readonly double _attackCooldown = 0.8;   // attacks ~every 0.8 seconds
+    private readonly double _attackCooldown = 0.5;   // attacks every 0.5 seconds for testing
     private readonly float _attackRange = 3.5f;
-    private readonly int _attackDamage = 20;
+    private readonly int _attackDamage = 25;
 
     public ChaseState(EnemyController enemy, StateMachine stateMachine, Node3D target)
     {
@@ -41,18 +41,18 @@ public class ChaseState : IState
         float distance = _enemy.GlobalPosition.DistanceTo(_target.GlobalPosition);
         bool canSee = _enemy.CanSeeTarget();
 
+        // Debug print every frame so we can see the state is actually running
         GD.Print($"[ChaseState] Dist: {distance:F1}m | CanSee: {canSee} | Timer: {_attackTimer:F2}");
 
         _enemy.SetNavigationTarget(_target.GlobalPosition);
 
-        // ATTACK LOGIC
         if (distance <= _attackRange && canSee)
         {
             _attackTimer += delta;
 
             if (_attackTimer >= _attackCooldown)
             {
-                GD.Print($"[ChaseState] → PERFORMING ATTACK! (Timer was {_attackTimer:F2})");
+                GD.Print($"[Enemy] ATTACKING! Dealing {_attackDamage} damage to player");
                 PerformAttack();
                 _attackTimer = 0.0;
             }
@@ -70,16 +70,10 @@ public class ChaseState : IState
 
     private void PerformAttack()
     {
-        GD.Print($"[Enemy] ATTACKING PLAYER for {_attackDamage} damage!");
-
         if (_target is IDamageable damageable)
-        {
             damageable.TakeDamage(_attackDamage);
-        }
         else if (_target.HasMethod("TakeDamage"))
-        {
             _target.Call("TakeDamage", _attackDamage);
-        }
     }
 
     public void Exit() { }
