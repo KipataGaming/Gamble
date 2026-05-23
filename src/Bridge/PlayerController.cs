@@ -36,8 +36,9 @@ namespace Game.Bridge
         {
             if (GetTree().Paused || _isDead) return;
 
-            // === TV Interaction Prompt ===
             InteractionRay.ForceRaycastUpdate();
+
+            string promptText = "";
 
             if (InteractionRay.IsColliding())
             {
@@ -47,28 +48,33 @@ namespace Game.Bridge
                 if (tv != null)
                 {
                     _currentTV = tv;
-
-                    if (InteractionPrompt != null)
-                    {
-                        InteractionPrompt.Text = "Press F to use TV";
-                        InteractionPrompt.Visible = true;
-                    }
+                    promptText = "Press F to use TV";
                 }
                 else
                 {
                     _currentTV = null;
-                    if (InteractionPrompt != null)
-                        InteractionPrompt.Visible = false;
                 }
             }
             else
             {
                 _currentTV = null;
-                if (InteractionPrompt != null)
-                    InteractionPrompt.Visible = false;
             }
 
-            // === Interaction (F key) ===
+            // Show or hide prompt
+            if (InteractionPrompt != null)
+            {
+                if (!string.IsNullOrEmpty(promptText))
+                {
+                    InteractionPrompt.Text = promptText;
+                    InteractionPrompt.Visible = true;
+                }
+                else
+                {
+                    InteractionPrompt.Visible = false;
+                }
+            }
+
+            // Interaction input
             if (Input.IsActionJustPressed("interact"))
             {
                 if (_currentTV != null)
@@ -89,7 +95,7 @@ namespace Game.Bridge
         {
             if (GetTree().Paused) return;
 
-            // Respawn with R key when dead
+            // Respawn with R when dead
             if (_isDead && @event is InputEventKey keyEvent && keyEvent.Pressed && !keyEvent.Echo && keyEvent.Keycode == Key.R)
             {
                 Respawn();
@@ -103,6 +109,7 @@ namespace Game.Bridge
             {
                 RotateY(-mouseMotion.Relative.X * MouseSensitivity);
                 PlayerCamera.RotateX(-mouseMotion.Relative.Y * MouseSensitivity);
+
                 Vector3 rot = PlayerCamera.Rotation;
                 rot.X = Mathf.Clamp(rot.X, -Mathf.Pi / 2, Mathf.Pi / 2);
                 PlayerCamera.Rotation = rot;
@@ -140,8 +147,12 @@ namespace Game.Bridge
             if (GetTree().Paused || _isDead) return;
 
             Vector3 velocity = Velocity;
-            if (!IsOnFloor()) velocity.Y -= Gravity * (float)delta;
-            if (Input.IsActionJustPressed("jump") && IsOnFloor()) velocity.Y = JumpVelocity;
+
+            if (!IsOnFloor())
+                velocity.Y -= Gravity * (float)delta;
+
+            if (Input.IsActionJustPressed("jump") && IsOnFloor())
+                velocity.Y = JumpVelocity;
 
             Vector2 inputDir = Input.GetVector("move_left", "move_right", "move_forward", "move_backward");
             Vector3 direction = (Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
@@ -217,6 +228,7 @@ namespace Game.Bridge
             if (InteractionRay.IsColliding())
             {
                 Node collider = InteractionRay.GetCollider() as Node;
+
                 if (collider != null && collider.HasMethod("InteractAndPickup"))
                 {
                     Variant result = collider.Call("InteractAndPickup");
