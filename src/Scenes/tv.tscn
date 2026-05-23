@@ -1,0 +1,33 @@
+[gd_scene format=3 uid="uid://ds3qs5jf87rjk"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_18vh7"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_oxl7i"]
+resource_local_to_scene = true
+albedo_texture = SubResource("ViewportTexture_18vh7")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_ed1mp"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_4sltd"]
+
+[sub_resource type="VideoStreamTheora" id="VideoStreamTheora_l4gqa"]
+file = "res://src/Resources/Videos/Bionic.ogv"
+
+[node name="TV" type="Node3D" unique_id=1425286963]
+
+[node name="Screen" type="MeshInstance3D" parent="." unique_id=899055025]
+transform = Transform3D(0.50346464, 0, 0, 0, -4.371139e-08, -0.49502957, 0, 1, -2.163843e-08, 0, 0, 0.49583572)
+material_override = SubResource("StandardMaterial3D_oxl7i")
+mesh = SubResource("PlaneMesh_ed1mp")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=831487112]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=402097215]
+shape = SubResource("BoxShape3D_4sltd")
+
+[node name="SubViewport" type="SubViewport" parent="." unique_id=325301302]
+
+[node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="SubViewport" unique_id=1857997541]
+offset_right = 40.0
+offset_bottom = 40.0
+stream = SubResource("VideoStreamTheora_l4gqa")

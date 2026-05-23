@@ -18,6 +18,10 @@ namespace Game.Bridge
         [Export] public float MouseSensitivity = 0.005f;
         [Export] public float Gravity = 9.8f;
 
+        [Export] public Label InteractionPrompt;
+
+        private TV _currentTV;
+
         // === Respawn & Death fields ===
         private bool _isDead = false;
         private Vector3 _spawnPosition;
@@ -25,15 +29,57 @@ namespace Game.Bridge
         public override void _Ready()
         {
             Input.MouseMode = Input.MouseModeEnum.Captured;
-            _spawnPosition = GlobalPosition;   // save starting position
+            _spawnPosition = GlobalPosition;
         }
 
         public override void _Process(double delta)
         {
             if (GetTree().Paused || _isDead) return;
 
+            // === TV Interaction Prompt ===
+            InteractionRay.ForceRaycastUpdate();
+
+            if (InteractionRay.IsColliding())
+            {
+                Node collider = InteractionRay.GetCollider() as Node;
+                TV tv = FindTVParent(collider);
+
+                if (tv != null)
+                {
+                    _currentTV = tv;
+
+                    if (InteractionPrompt != null)
+                    {
+                        InteractionPrompt.Text = "Press F to use TV";
+                        InteractionPrompt.Visible = true;
+                    }
+                }
+                else
+                {
+                    _currentTV = null;
+                    if (InteractionPrompt != null)
+                        InteractionPrompt.Visible = false;
+                }
+            }
+            else
+            {
+                _currentTV = null;
+                if (InteractionPrompt != null)
+                    InteractionPrompt.Visible = false;
+            }
+
+            // === Interaction (F key) ===
             if (Input.IsActionJustPressed("interact"))
-                HandlePickup();
+            {
+                if (_currentTV != null)
+                {
+                    _currentTV.OnPlayerInteract();
+                }
+                else
+                {
+                    HandlePickup();
+                }
+            }
 
             if (Input.IsActionJustPressed("attack"))
                 HandleToolUse();
@@ -62,7 +108,7 @@ namespace Game.Bridge
                 PlayerCamera.Rotation = rot;
             }
 
-            // Weapon swapping
+            // Weapon swapping + debug keys
             if (@event is InputEventKey keyEvent2 && keyEvent2.Pressed && !keyEvent2.Echo)
             {
                 if (keyEvent2.Keycode == Key.Key1) EquipTool(0);
@@ -72,22 +118,23 @@ namespace Game.Bridge
                 if (keyEvent2.Keycode == Key.Key5) EquipTool(4);
                 if (keyEvent2.Keycode == Key.Key6) EquipTool(5);
                 if (keyEvent2.Keycode == Key.Key7) EquipTool(6);
-                // === TEST: Press M to sell 1 wood ===
-    if (keyEvent2.Keycode == Key.M)
-    {
-        bool sold = MarketManager.Instance.SellItem("wood", 1);
-        GD.Print(sold ? "[TEST] Sold 1 wood!" : "[TEST] Could not sell wood");
-    }
-        if (keyEvent2.Keycode == Key.B)
-{
-    // Toggle Market UI
-    var market = GetTree().Root.GetNodeOrNull<MarketUI>("/root/MarketUI");
-    if (market != null)
-        market.Visible = !market.Visible;
-}
-    }
+
+                // Debug keys
+                if (keyEvent2.Keycode == Key.M)
+                {
+                    bool sold = MarketManager.Instance.SellItem("wood", 1);
+                    GD.Print(sold ? "[TEST] Sold 1 wood!" : "[TEST] Could not sell wood");
+                }
+
+                if (keyEvent2.Keycode == Key.B)
+                {
+                    var market = GetTree().Root.GetNodeOrNull<MarketUI>("/root/MarketUI");
+                    if (market != null)
+                        market.Visible = !market.Visible;
+                }
+            }
         }
-      
+
         public override void _PhysicsProcess(double delta)
         {
             if (GetTree().Paused || _isDead) return;
@@ -98,7 +145,7 @@ namespace Game.Bridge
 
             Vector2 inputDir = Input.GetVector("move_left", "move_right", "move_forward", "move_backward");
             Vector3 direction = (Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
-            
+
             if (direction != Vector3.Zero)
             {
                 velocity.X = direction.X * Speed;
@@ -109,6 +156,7 @@ namespace Game.Bridge
                 velocity.X = Mathf.MoveToward(Velocity.X, 0, Speed);
                 velocity.Z = Mathf.MoveToward(Velocity.Z, 0, Speed);
             }
+
             Velocity = velocity;
             MoveAndSlide();
         }
@@ -128,28 +176,25 @@ namespace Game.Bridge
         private void Die()
         {
             _isDead = true;
-            GD.Print("[Player] → DEAD. Press **R** to respawn.");
+            GD.Print("[Player] → DEAD. Press R to respawn.");
             Input.MouseMode = Input.MouseModeEnum.Visible;
         }
 
         private void Respawn()
-{
-    _isDead = false;
-    Input.MouseMode = Input.MouseModeEnum.Captured;
+        {
+            _isDead = false;
+            Input.MouseMode = Input.MouseModeEnum.Captured;
+            GlobalPosition = _spawnPosition;
+            Velocity = Vector3.Zero;
+            PlayerStatsManager.Instance.ResetStats();
+            GD.Print("[Player] Respawned at starting position with full health!");
+        }
 
-    GlobalPosition = _spawnPosition;
-    Velocity = Vector3.Zero;
-
-    // Use the existing ResetStats() method (clean and already in PlayerStatsManager)
-    PlayerStatsManager.Instance.ResetStats();
-
-    GD.Print("[Player] Respawned at starting position with full health!");
-}
-        // ==================== YOUR ORIGINAL METHODS ====================
+        // ==================== ORIGINAL METHODS ====================
         private void EquipTool(int slotIndex)
         {
             if (slotIndex < 0 || slotIndex >= Equipment.Count) return;
-            
+
             WeaponBridge selectedTool = Equipment[slotIndex];
             if (selectedTool == null) return;
 
@@ -161,7 +206,6 @@ namespace Game.Bridge
 
             CurrentWeapon = selectedTool;
             CurrentWeapon.Visible = true;
-            
             GD.Print($"[Player] Equipped Slot {slotIndex + 1}: {CurrentWeapon.ToolCategory}");
         }
 
@@ -173,7 +217,6 @@ namespace Game.Bridge
             if (InteractionRay.IsColliding())
             {
                 Node collider = InteractionRay.GetCollider() as Node;
-                
                 if (collider != null && collider.HasMethod("InteractAndPickup"))
                 {
                     Variant result = collider.Call("InteractAndPickup");
@@ -192,8 +235,8 @@ namespace Game.Bridge
             if (CurrentWeapon == null) return;
 
             string toolCategory = CurrentWeapon.ToolCategory.Trim().ToLower();
-            
             float staminaCost = 0f;
+
             if (toolCategory == "axe" || toolCategory == "pickaxe") staminaCost = 5f;
             else if (toolCategory == "shovel" || toolCategory == "wateringcan") staminaCost = 3f;
             else if (toolCategory == "scythe" || toolCategory == "weapon") staminaCost = 2f;
@@ -202,15 +245,13 @@ namespace Game.Bridge
             if (toolCategory == "weapon")
             {
                 if (PlayerStatsManager.Instance.TryConsumeStamina(staminaCost))
-                {
                     CurrentWeapon.PerformAttack();
-                }
                 return;
             }
 
             if (InteractionRay == null) return;
             InteractionRay.ForceRaycastUpdate();
-            
+
             if (InteractionRay.IsColliding())
             {
                 Node collider = InteractionRay.GetCollider() as Node;
@@ -218,16 +259,11 @@ namespace Game.Bridge
                 ResourceNodeBridge hitResource = FindResourceBridgeParent(collider);
                 if (hitResource != null)
                 {
-                    if (toolCategory == "axe")
-                    {
-                        if (PlayerStatsManager.Instance.TryConsumeStamina(staminaCost)) hitResource.Interact("Chop");
-                        return; 
-                    }
-                    else if (toolCategory == "pickaxe")
-                    {
-                        if (PlayerStatsManager.Instance.TryConsumeStamina(staminaCost)) hitResource.Interact("Mine");
-                        return; 
-                    }
+                    if (toolCategory == "axe" && PlayerStatsManager.Instance.TryConsumeStamina(staminaCost))
+                        hitResource.Interact("Chop");
+                    else if (toolCategory == "pickaxe" && PlayerStatsManager.Instance.TryConsumeStamina(staminaCost))
+                        hitResource.Interact("Mine");
+                    return;
                 }
 
                 FarmGridBridge hitGarden = FindFarmBridgeParent(collider);
@@ -235,7 +271,7 @@ namespace Game.Bridge
                 {
                     Vector3 hitPoint = InteractionRay.GetCollisionPoint();
                     Vector2I gridCoord = hitGarden.WorldToGridCoordinates(hitPoint);
-                    
+
                     string actionToSend = "";
                     string cropIdToPlant = "";
 
@@ -244,24 +280,20 @@ namespace Game.Bridge
                     else if (toolCategory == "seed") { actionToSend = "Plant"; cropIdToPlant = "Carrot"; }
                     else if (toolCategory == "scythe") actionToSend = "Harvest";
 
-                    if (!string.IsNullOrEmpty(actionToSend))
+                    if (!string.IsNullOrEmpty(actionToSend) && PlayerStatsManager.Instance.TryConsumeStamina(staminaCost))
                     {
-                        if (PlayerStatsManager.Instance.TryConsumeStamina(staminaCost))
-                        {
-                            hitGarden.Interact(gridCoord, actionToSend, cropIdToPlant);
-                        }
+                        hitGarden.Interact(gridCoord, actionToSend, cropIdToPlant);
                     }
                 }
             }
         }
-        
+
         private FarmGridBridge FindFarmBridgeParent(Node node)
         {
             Node current = node;
             while (current != null)
             {
-                if (current is FarmGridBridge bridge)
-                    return bridge;
+                if (current is FarmGridBridge bridge) return bridge;
                 current = current.GetParent();
             }
             return null;
@@ -272,12 +304,21 @@ namespace Game.Bridge
             Node current = node;
             while (current != null)
             {
-                if (current is ResourceNodeBridge bridge)
-                    return bridge;
+                if (current is ResourceNodeBridge bridge) return bridge;
+                current = current.GetParent();
+            }
+            return null;
+        }
+
+        private TV FindTVParent(Node node)
+        {
+            Node current = node;
+            while (current != null)
+            {
+                if (current is TV tv) return tv;
                 current = current.GetParent();
             }
             return null;
         }
     }
-    
 }

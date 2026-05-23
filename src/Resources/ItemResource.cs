@@ -39,9 +39,9 @@ namespace Game.Resources
 {
 	return itemId switch
 	{
-		"wood"  => GD.Load<ItemResource>("res://resources/wood.tres"),
-		"rock"  => GD.Load<ItemResource>("res://resources/rock.tres"),
-		"melon" => GD.Load<ItemResource>("res://resources/melon.tres"),
+		"wood"  => GD.Load<ItemResource>("res://Resources/wood.tres"),
+		"rock"  => GD.Load<ItemResource>("res://Resources/rock.tres"),
+		"melon" => GD.Load<ItemResource>("res://Resources/melon.tres"),
 		_       => null
 	};
 }

@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cjry4fgyjkm24"]
 
 [ext_resource type="Script" uid="uid://r7oeov6gmouc" path="res://src/Core/ArenaManager.cs" id="1_ch1ul"]
-[ext_resource type="PackedScene" uid="uid://h4jsfomtuihv" path="res://src/Core/AI/enemy.tscn" id="1_waasl"]
+[ext_resource type="PackedScene" uid="uid://h4jsfomtuihv" path="res://src/Bridge/AI/enemy.tscn" id="1_waasl"]
 [ext_resource type="PackedScene" uid="uid://2jp1r6x26g3i" path="res://src/Resources/player.tscn" id="2_0jsp4"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_0jsp4"]

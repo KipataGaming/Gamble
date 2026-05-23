@@ -1,0 +1,47 @@
+[gd_scene format=3 uid="uid://55wg7dtq1523"]
+
+[ext_resource type="Script" uid="uid://bff7n3k82rf7u" path="res://src/Bridge/ResourceNodeBridge.cs" id="1_0pwcp"]
+[ext_resource type="Script" uid="uid://dlycaky2vy30m" path="res://src/Bridge/RandomTreeMesh.cs" id="1_ihfdr"]
+[ext_resource type="ArrayMesh" uid="uid://dq43ihyblrkd2" path="res://src/Resources/Trees/Trunks/trunk_0.mesh" id="2_vfqon"]
+[ext_resource type="ArrayMesh" uid="uid://cgkgmvr61yqiv" path="res://src/Resources/Trees/Trunks/trunk_1.mesh" id="3_w011p"]
+[ext_resource type="ArrayMesh" uid="uid://b7oap3rc85wlu" path="res://src/Resources/Trees/Trunks/trunk_2.mesh" id="4_7ntpt"]
+[ext_resource type="ArrayMesh" uid="uid://cc3gchs0uhlit" path="res://src/Resources/Trees/Trunks/trunk_3.mesh" id="5_1aaug"]
+[ext_resource type="ArrayMesh" uid="uid://bjsao5o8eet21" path="res://src/Resources/Trees/Leaves/leaves_0.mesh" id="6_3bl5r"]
+[ext_resource type="ArrayMesh" uid="uid://buppctukbmdf5" path="res://src/Resources/Trees/Leaves/leaves_1.mesh" id="7_cugsu"]
+[ext_resource type="ArrayMesh" uid="uid://dbodwj6yto4qi" path="res://src/Resources/Trees/Leaves/leaves_2.mesh" id="8_mflxd"]
+[ext_resource type="ArrayMesh" uid="uid://bqiegmst4lvce" path="res://src/Resources/Trees/Leaves/leaves_3.mesh" id="9_i13jt"]
+[ext_resource type="ArrayMesh" uid="uid://c0uqt4yei3xk0" path="res://src/Resources/Trees/Leaves/leaves_4.mesh" id="10_w7unp"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jiqpq"]
+albedo_color = Color(0.21568628, 0.15686275, 0.050980393, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vfqon"]
+albedo_color = Color(0, 0.7372549, 0.33333334, 1)
+
+[node name="Tree" type="Node3D" unique_id=581241713]
+script = ExtResource("1_0pwcp")
+
+[node name="RandomTreeMesh" type="Node3D" parent="." unique_id=47845292]
+transform = Transform3D(-1.8271009, 0, -1.1051345, 0, 2.1353266, 0, 1.1051345, 0, -1.8271009, 0, 0, 0)
+script = ExtResource("1_ihfdr")
+TrunkMeshes = Array[ArrayMesh]([ExtResource("2_vfqon"), ExtResource("3_w011p"), ExtResource("4_7ntpt"), ExtResource("5_1aaug")])
+LeafMeshes = Array[ArrayMesh]([ExtResource("6_3bl5r"), ExtResource("7_cugsu"), ExtResource("8_mflxd"), ExtResource("9_i13jt"), ExtResource("10_w7unp")])
+
+[node name="Trunk" type="MeshInstance3D" parent="." unique_id=356414537]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7056713, 0)
+material_override = SubResource("StandardMaterial3D_jiqpq")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Trunk" unique_id=58471819]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.7056713, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Trunk/StaticBody3D" unique_id=1110937809]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5652149, 2.535614, 0.045216084)
+
+[node name="Leaves" type="MeshInstance3D" parent="." unique_id=428489146]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6814818, 0)
+material_override = SubResource("StandardMaterial3D_vfqon")
+
+[node name="StaticBody3D2" type="StaticBody3D" parent="Leaves" unique_id=1692003394]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.6814818, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Leaves/StaticBody3D2" unique_id=1833576988]

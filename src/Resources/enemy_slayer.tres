@@ -1,9 +1,0 @@
-[gd_resource type="Resource" script_class="AchievementResource" format=3 uid="uid://ch8bsni2heh3h"]
-
-[ext_resource type="Script" uid="uid://dyfpb0h41n1gn" path="res://src/Resources/AchievementResource.cs" id="1_740qr"]
-
-[resource]
-script = ExtResource("1_740qr")
-Id = "enemy_slayer"
-Goal = 5
-metadata/_custom_type_script = "uid://dyfpb0h41n1gn"

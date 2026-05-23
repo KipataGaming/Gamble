@@ -25,8 +25,8 @@ public int CurrentMoney { get; private set; } = 0; // ← You already added this
     CurrentHealth = MaxHealth;
     CurrentMoney = 0;
 
-    // Load all ItemResource .tres files from res://resources/
-    var dir = DirAccess.Open("res://resources");
+    // Load all ItemResource .tres files from src/Resources/
+    var dir = DirAccess.Open("res://src/Resources");
     if (dir != null)
     {
         dir.ListDirBegin();
@@ -36,7 +36,7 @@ public int CurrentMoney { get; private set; } = 0; // ← You already added this
         {
             if (!dir.CurrentIsDir() && fileName.EndsWith(".tres"))
             {
-                string path = "res://resources/" + fileName;
+                string path = "res://src/Resources/" + fileName;
                 var resource = GD.Load<ItemResource>(path);
 
                 if (resource != null && !string.IsNullOrEmpty(resource.Id))
@@ -48,6 +48,10 @@ public int CurrentMoney { get; private set; } = 0; // ← You already added this
             fileName = dir.GetNext();
         }
         dir.ListDirEnd();
+    }
+    else
+    {
+        GD.PrintErr("[InventoryManager] Could not open res://src/Resources folder!");
     }
 }
 public Dictionary<string, int> GetAllItems()
@@ -130,7 +134,7 @@ public Dictionary<string, int> GetAllItems()
     }
 
     // Fallback: try to load it directly from disk
-    string path = $"res://resources/{itemId}.tres";
+    string path = $"res://src/Resources/{itemId}.tres";
     var loaded = GD.Load<ItemResource>(path);
     if (loaded != null)
     {

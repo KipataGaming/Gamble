@@ -1,0 +1,265 @@
+[gd_scene format=3 uid="uid://bfqt6nm5adcdv"]
+
+[ext_resource type="Script" uid="uid://bcw12sbv83t0l" path="res://src/Bridge/LocationSetter.cs" id="1_u2m37"]
+[ext_resource type="PackedScene" uid="uid://2jp1r6x26g3i" path="res://src/Resources/player.tscn" id="2_ojnsd"]
+[ext_resource type="Script" uid="uid://tpcsgd1u0ye7" path="res://src/Bridge/EnvironmentBridge.cs" id="3_hg6nk"]
+[ext_resource type="Script" uid="uid://mfp4kg81lnry" path="res://src/Bridge/SunBridge.cs" id="4_e4c6v"]
+[ext_resource type="Script" uid="uid://ct6p80qysbmbh" path="res://src/Bridge/StatsUIBridge.cs" id="5_w3s2q"]
+[ext_resource type="Script" uid="uid://3vny8lho6vxg" path="res://src/Bridge/InventoryUIBridge.cs" id="6_2kg1o"]
+[ext_resource type="PackedScene" uid="uid://br65ovqjab54d" path="res://src/Scenes/hud.tscn" id="7_6dq5p"]
+[ext_resource type="PackedScene" uid="uid://cyow16xipl8j4" path="res://src/Scenes/EscapeMenu.tscn" id="8_7u8tw"]
+[ext_resource type="Script" uid="uid://dpi6ksk1tmih" path="res://src/Bridge/FarmGridBridge.cs" id="9_iaes7"]
+[ext_resource type="PackedScene" uid="uid://h4jsfomtuihv" path="res://src/Bridge/AI/enemy.tscn" id="10_n0f2q"]
+[ext_resource type="PackedScene" uid="uid://dupnaaqrhh0l6" path="res://src/Scenes/market_ui.tscn" id="11_mca2u"]
+[ext_resource type="PackedScene" uid="uid://cdosp8phibnl0" path="res://src/Scenes/rock.tscn" id="12_hg6nk"]
+[ext_resource type="PackedScene" uid="uid://55wg7dtq1523" path="res://src/Scenes/tree.tscn" id="13_e4c6v"]
+[ext_resource type="PackedScene" uid="uid://dyf58if01mxcx" path="res://src/Scenes/TVset.tscn" id="14_e4c6v"]
+
+[sub_resource type="Gradient" id="Gradient_0vhqb"]
+offsets = PackedFloat32Array(0.2542373, 1)
+colors = PackedColorArray(0, 0, 0, 0, 1, 1, 1, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_k2i6c"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_0ri8u"]
+noise = SubResource("FastNoiseLite_k2i6c")
+color_ramp = SubResource("Gradient_0vhqb")
+seamless = true
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_hms8v"]
+sky_cover = SubResource("NoiseTexture2D_0ri8u")
+ground_bottom_color = Color(0.10075771, 0.20394126, 0.08295966, 1)
+ground_horizon_color = Color(0.60728824, 0.6186715, 0.6360056, 1)
+
+[sub_resource type="Sky" id="Sky_7nnrg"]
+sky_material = SubResource("ProceduralSkyMaterial_hms8v")
+process_mode = 1
+
+[sub_resource type="Environment" id="Environment_hms8v"]
+background_mode = 2
+sky = SubResource("Sky_7nnrg")
+ambient_light_source = 3
+sdfgi_use_occlusion = true
+sdfgi_bounce_feedback = 1.58
+fog_sun_scatter = 0.33
+fog_density = 0.0341
+volumetric_fog_temporal_reprojection_amount = 0.99
+adjustment_enabled = true
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_7nnrg"]
+
+[sub_resource type="Compositor" id="Compositor_bow1t"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_k2i6c"]
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_k2i6c"]
+vertices = PackedVector3Array(-99.5, 1, -99.5, -99.5, 1, 99.5, 99.5, 1, 99.5, 99.5, 1, -99.5)
+polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
+
+[node name="Main" type="Node3D" unique_id=194370206]
+script = ExtResource("1_u2m37")
+
+[node name="Player" parent="." unique_id=595063796 node_paths=PackedStringArray("InteractionPrompt") instance=ExtResource("2_ojnsd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7253587, 0.5, -0.07812342)
+InteractionPrompt = NodePath("../UI/InteractionPrompt")
+
+[node name="Node2D" type="Node2D" parent="." unique_id=708019369]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=884360744]
+environment = SubResource("Environment_hms8v")
+camera_attributes = SubResource("CameraAttributesPractical_7nnrg")
+compositor = SubResource("Compositor_bow1t")
+script = ExtResource("3_hg6nk")
+
+[node name="Node3D" type="Node3D" parent="WorldEnvironment" unique_id=1901506280 node_paths=PackedStringArray("SunLight")]
+script = ExtResource("4_e4c6v")
+SunLight = NodePath("DirectionalLight3D")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment/Node3D" unique_id=1719059111]
+shadow_enabled = true
+shadow_bias = 2.1
+shadow_normal_bias = 6.235
+
+[node name="UI" type="Control" parent="." unique_id=685821177 node_paths=PackedStringArray("HealthBar", "StaminaBar", "HealthLabel", "StaminaLabel")]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 359.0
+offset_top = 11.0
+offset_right = 1024.0
+offset_bottom = 155.0
+script = ExtResource("5_w3s2q")
+HealthBar = NodePath("HeatlhBar")
+StaminaBar = NodePath("StaminaBar")
+HealthLabel = NodePath("HealthLabel")
+StaminaLabel = NodePath("StaminaLabel")
+
+[node name="HeatlhBar" type="ProgressBar" parent="UI" unique_id=1039571613]
+layout_mode = 0
+offset_right = 683.0
+offset_bottom = 27.0
+
+[node name="StaminaBar" type="ProgressBar" parent="UI" unique_id=1497234067]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 29.0
+offset_right = 683.0
+offset_bottom = 56.0
+
+[node name="HealthLabel" type="Label" parent="UI" unique_id=1402901683]
+layout_mode = 0
+offset_left = 66.0
+offset_top = 5.0
+offset_right = 118.0
+offset_bottom = 54.0
+text = "Health
+"
+
+[node name="StaminaLabel" type="Label" parent="UI" unique_id=1710909282]
+layout_mode = 0
+offset_left = 59.0
+offset_top = 30.0
+offset_right = 123.0
+offset_bottom = 53.0
+text = "Stamina"
+
+[node name="InteractionPrompt" type="Label" parent="UI" unique_id=1343531859]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.2
+anchor_top = 1.9650002
+anchor_right = 0.328
+anchor_bottom = 2.361
+offset_top = 0.039978027
+offset_right = 57.87999
+offset_bottom = -33.98401
+text = "Press F To Interact"
+horizontal_alignment = 1
+
+[node name="InventoryUI" type="Control" parent="." unique_id=1247934103 node_paths=PackedStringArray("InventoryGrid")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("6_2kg1o")
+InventoryGrid = NodePath("InventoryGrid")
+
+[node name="BackgroundPanel" type="Panel" parent="InventoryUI" unique_id=838198217]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleLabel" type="Label" parent="InventoryUI" unique_id=1102747324]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.45900002
+anchor_top = 0.053000003
+anchor_right = 0.73200005
+anchor_bottom = 0.13000001
+offset_left = 0.008987427
+offset_top = -0.011001587
+offset_right = 0.13195801
+offset_bottom = 0.18999481
+text = "INVENTORY"
+label_settings = SubResource("LabelSettings_k2i6c")
+horizontal_alignment = 1
+
+[node name="InventoryGrid" type="GridContainer" parent="InventoryUI" unique_id=1370872993]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 4
+
+[node name="HUD" parent="." unique_id=482326171 instance=ExtResource("7_6dq5p")]
+layer = 10
+
+[node name="EscapeMenu" parent="." unique_id=666235658 instance=ExtResource("8_7u8tw")]
+offset_left = 8.0
+offset_top = 4.0
+offset_right = 8.0
+offset_bottom = 4.0
+
+[node name="FarmGridBridge" type="Node3D" parent="." unique_id=736811770]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+script = ExtResource("9_iaes7")
+GridWidth = 1
+GridHeight = 1
+
+[node name="Enemy" parent="." unique_id=1437758100 instance=ExtResource("10_n0f2q")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.0653558, 1.7424202, -33.745205)
+up_direction = Vector3(0, 1, 0)
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="." unique_id=490183830]
+navigation_mesh = SubResource("NavigationMesh_k2i6c")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="NavigationRegion3D" unique_id=638745682]
+use_collision = true
+size = Vector3(200, 1, 200)
+
+[node name="MarketUI" parent="." unique_id=2105530063 instance=ExtResource("11_mca2u")]
+offset_left = 4.0
+offset_top = 53.0
+offset_right = 44.0
+offset_bottom = 93.0
+
+[node name="Rock" parent="." unique_id=2056498813 instance=ExtResource("12_hg6nk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.115901, 0.85748017, 7.622654)
+
+[node name="Rock2" parent="." unique_id=155860590 instance=ExtResource("12_hg6nk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.30061, 0.85748017, -6.0912414)
+
+[node name="Rock3" parent="." unique_id=1382093651 instance=ExtResource("12_hg6nk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.03614, 0.8111428, -2.1272802)
+
+[node name="Rock4" parent="." unique_id=892376174 instance=ExtResource("12_hg6nk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0879998, 0.8111428, 5.6024246)
+
+[node name="Rock5" parent="." unique_id=1012166309 instance=ExtResource("12_hg6nk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.043437, 0.8574797, 0.36172342)
+
+[node name="Tree" parent="." unique_id=581241713 instance=ExtResource("13_e4c6v")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35.086792, 0.5000005, -29.077467)
+
+[node name="Tree2" parent="." unique_id=117202211 instance=ExtResource("13_e4c6v")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1530023, 0.5, 2.4732606)
+
+[node name="Tree3" parent="." unique_id=1683458295 instance=ExtResource("13_e4c6v")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3392231, 0.5000005, -7.333444)
+
+[node name="Tree4" parent="." unique_id=1867681372 instance=ExtResource("13_e4c6v")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.0422554, 0.5000001, 1.7944422)
+
+[node name="Tree5" parent="." unique_id=647065537 instance=ExtResource("13_e4c6v")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.626434, 0.49999905, -13.56447)
+
+[node name="Tree6" parent="." unique_id=2006776525 instance=ExtResource("13_e4c6v")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.842604, 0.50000095, 12.592489)
+
+[node name="Tree7" parent="." unique_id=127753354 instance=ExtResource("13_e4c6v")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.332364, 0.5, -3.9764376)
+
+[node name="Rock6" parent="." unique_id=962491024 instance=ExtResource("12_hg6nk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.38559, 0.34243107, -5.3641424)
+
+[node name="Rock7" parent="." unique_id=1172138131 instance=ExtResource("12_hg6nk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.811721, 0.88726735, 1.1902728)
+
+[node name="Rock8" parent="." unique_id=715685932 instance=ExtResource("12_hg6nk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.457351, 0.8524809, 2.8700123)
+
+[node name="Rock9" parent="." unique_id=1467032289 instance=ExtResource("12_hg6nk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.544075, 0.85748017, -1.0096722)
+
+[node name="TV" parent="." unique_id=1425286963 instance=ExtResource("14_e4c6v")]
+transform = Transform3D(0.20090699, 0, 0.9796103, 0, 1, 0, -0.9796103, 0, 0.20090699, -4.1957726, 2.190889, -0.27390063)

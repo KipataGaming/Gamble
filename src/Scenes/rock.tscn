@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://cdosp8phibnl0"]
+
+[ext_resource type="Script" uid="uid://bff7n3k82rf7u" path="res://src/Bridge/ResourceNodeBridge.cs" id="1_e5u86"]
+[ext_resource type="Script" uid="uid://c0x83qjpbkx1k" path="res://src/Bridge/RandomRockMesh.cs" id="2_b4pii"]
+[ext_resource type="ArrayMesh" uid="uid://ciw4tukm1tolh" path="res://src/Resources/Rocks/rock_0.mesh" id="3_pk3xe"]
+[ext_resource type="ArrayMesh" uid="uid://cpiaia6ogwrwt" path="res://src/Resources/Rocks/rock_1.mesh" id="4_5b0md"]
+[ext_resource type="ArrayMesh" uid="uid://qfupgtso3xxc" path="res://src/Resources/Rocks/rock_2.mesh" id="5_d4f34"]
+[ext_resource type="ArrayMesh" uid="uid://b1sgb0r6vsinw" path="res://src/Resources/Rocks/rock_3.mesh" id="6_hw5yo"]
+[ext_resource type="ArrayMesh" uid="uid://cgqv3mxjwrtq7" path="res://src/Resources/Rocks/rock_4.mesh" id="7_n6l63"]
+
+[node name="Rock" type="Node3D" unique_id=2056498813]
+script = ExtResource("1_e5u86")
+ResourceType = "Rock"
+
+[node name="RockMesh" type="MeshInstance3D" parent="." unique_id=1533582643]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7391275, 0)
+gi_mode = 2
+script = ExtResource("2_b4pii")
+RockMeshes = Array[ArrayMesh]([ExtResource("3_pk3xe"), ExtResource("4_5b0md"), ExtResource("5_d4f34"), ExtResource("6_hw5yo"), ExtResource("7_n6l63")])
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=896551337]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=1599025588]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.03918457, 0.7437134, -0.018432617)

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" format=3 uid="uid://b7vgibbaenqfe"]
+
+[ext_resource type="Script" uid="uid://blfn5etyjf6rw" path="res://src/Resources/ItemResource.cs" id="1_ah64c"]
+
+[resource]
+resource_name = "Rock"
+script = ExtResource("1_ah64c")
+Id = "rock"
+Name = "Rock"
+Weight = 1.5
