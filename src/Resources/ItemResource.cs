@@ -1,16 +1,38 @@
-#nullable enable
 using Godot;
 
-namespace Game.Resources;
-
-[GlobalClass]
-public partial class ItemResource : Resource
+namespace Game.Resources
 {
-    [Export] public string Id { get; private set; } = "";
-    [Export] public string Name { get; private set; } = "";
-    [Export] public string Description { get; private set; } = "";
-    [Export] public int MaxStackSize { get; private set; } = 1;
-    [Export] public float Weight { get; private set; } = 0.0f;
-    
-    [Export] public Texture2D? Icon { get; private set; } 
+    public enum ItemRarity
+    {
+        RoyalBlue = 1,    // Tier 1 - Blue
+        Silver = 2,       // Tier 2
+        Gold = 3,         // Tier 3
+        RoyalPurple = 4,  // Tier 4 - Purple
+        Emerald = 5,      // Tier 5
+        Crimson = 6       // Tier 6
+    }
+
+    public partial class ItemResource : Resource
+    {
+        [Export] public string Id { get; set; } = "";
+        [Export] public string Name { get; set; } = "";
+        [Export] public Texture2D Icon { get; set; }
+        [Export] public float Weight { get; set; } = 1.0f;
+
+        [Export] public ItemRarity Rarity { get; set; } = ItemRarity.RoyalBlue;
+
+        public float GetValueMultiplier()
+        {
+            return Rarity switch
+            {
+                ItemRarity.RoyalBlue => 1.0f,
+                ItemRarity.Silver => 1.5f,
+                ItemRarity.Gold => 2.5f,
+                ItemRarity.RoyalPurple => 4.0f,
+                ItemRarity.Emerald => 6.0f,
+                ItemRarity.Crimson => 10.0f,
+                _ => 1.0f
+            };
+        }
+    }
 }

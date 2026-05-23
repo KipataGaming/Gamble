@@ -1,7 +1,9 @@
+// src/Bridge/FarmGridBridge.cs
 using Godot;
 using System;
 using System.Collections.Generic;
 using Game.Core;
+using Game.Resources;
 
 namespace Game.Bridge
 {
@@ -128,8 +130,11 @@ namespace Game.Bridge
                 {
                     if (!string.IsNullOrEmpty(harvestedCropId))
                     {
+                        // Random quality for crops
+                        ItemRarity rarity = GetRandomRarity();
+
                         InventoryManager.Instance.AddItemById(harvestedCropId, 1);
-                        GD.Print($"[FarmGrid] Harvested {harvestedCropId} → added to inventory");
+                        GD.Print($"[FarmGrid] Harvested {harvestedCropId} → {rarity}");
                     }
                 }
             }
@@ -144,6 +149,21 @@ namespace Game.Bridge
             int x = Mathf.RoundToInt(worldPosition.X / TileSpacing);
             int y = Mathf.RoundToInt(worldPosition.Z / TileSpacing);
             return new Vector2I(x, y);
+        }
+
+        // Random quality helper (same as trees/rocks)
+        private ItemRarity GetRandomRarity()
+        {
+            int roll = GD.RandRange(1, 100);
+            return roll switch
+            {
+                < 60  => ItemRarity.RoyalBlue,
+                < 85  => ItemRarity.Silver,
+                < 95  => ItemRarity.Gold,
+                < 98  => ItemRarity.RoyalPurple,
+                < 99  => ItemRarity.Emerald,
+                _     => ItemRarity.Crimson
+            };
         }
 
         public override void _Input(InputEvent @event)

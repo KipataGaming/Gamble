@@ -15,11 +15,10 @@ public partial class InventoryUIBridge : Control
     public override void _Ready()
     {
         GD.Print("[InventoryUI] Ready - Grid assigned? " + (InventoryGrid != null));
-
         if (InventoryGrid != null)
             InventoryGrid.Columns = 5;
 
-        EventBroker.OnItemCollected += HandleItemCollected;   // ← This line was missing
+        EventBroker.OnItemCollected += HandleItemCollected;
     }
 
     public override void _ExitTree()
@@ -35,34 +34,66 @@ public partial class InventoryUIBridge : Control
 
     private void HandleItemCollected(string itemId, int quantity)
     {
-        GD.Print($"[InventoryUI] Received: {itemId} x{quantity}");
+        GD.Print($"[InventoryUI] Received item: {itemId} x{quantity}");
 
         if (InventoryGrid == null)
         {
-            GD.PrintErr("[InventoryUI] InventoryGrid is NOT assigned in Inspector!");
+            GD.PrintErr("[InventoryUI] InventoryGrid is null!");
             return;
         }
 
-        // Big, bright green slot so we can see it clearly
+        ItemResource item = InventoryManager.Instance.GetItemData(itemId);
+        string displayName = item?.Name ?? itemId.Capitalize();
+
         var slot = new PanelContainer();
-        slot.CustomMinimumSize = new Vector2(110, 110);
+        slot.CustomMinimumSize = new Vector2(100, 100);
 
         var style = new StyleBoxFlat();
-        style.BgColor = new Color(0, 1, 0, 0.7f);
+        style.BgColor = new Color(0.15f, 0.15f, 0.15f, 0.9f);
         style.BorderWidthBottom = 8;
-        style.BorderColor = Colors.White;
+
+        if (item != null)
+            style.BorderColor = GetRarityColor(item.Rarity);
+        else
+            style.BorderColor = Colors.Gray;
+
         slot.AddThemeStyleboxOverride("panel", style);
 
-        var label = new Label();
-        label.Text = $"{itemId}\nx{quantity}";
-        label.HorizontalAlignment = HorizontalAlignment.Center;
-        label.VerticalAlignment = VerticalAlignment.Center;
-        label.AddThemeFontSizeOverride("font_size", 18);
-        slot.AddChild(label);
+        var vbox = new VBoxContainer();
+        vbox.Alignment = BoxContainer.AlignmentMode.Center;
 
+        if (item?.Icon != null)
+        {
+            var icon = new TextureRect();
+            icon.Texture = item.Icon;
+            icon.StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered;
+            icon.CustomMinimumSize = new Vector2(64, 64);
+            vbox.AddChild(icon);
+        }
+
+        var label = new Label();
+        label.Text = $"{displayName}\nx{quantity}";
+        label.HorizontalAlignment = HorizontalAlignment.Center;
+        vbox.AddChild(label);
+
+        slot.AddChild(vbox);
         InventoryGrid.AddChild(slot);
         _slots[itemId] = slot;
 
-        GD.Print($"[InventoryUI] Created visible slot for {itemId}");
+        GD.Print($"[InventoryUI] SUCCESS: Created slot for {displayName}");
+    }
+
+    private Color GetRarityColor(ItemRarity rarity)
+    {
+        return rarity switch
+        {
+            ItemRarity.RoyalBlue   => new Color(0.2f, 0.4f, 1.0f),
+            ItemRarity.Silver      => new Color(0.75f, 0.75f, 0.75f),
+            ItemRarity.Gold        => new Color(1.0f, 0.84f, 0.0f),
+            ItemRarity.RoyalPurple => new Color(0.7f, 0.2f, 1.0f),
+            ItemRarity.Emerald     => new Color(0.0f, 0.8f, 0.4f),
+            ItemRarity.Crimson     => new Color(1.0f, 0.1f, 0.2f),
+            _ => Colors.White
+        };
     }
 }

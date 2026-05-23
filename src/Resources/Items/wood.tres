@@ -1,0 +1,12 @@
+[gd_resource type="Resource" format=3 uid="uid://c72rbrh2ya16j"]
+
+[ext_resource type="Script" uid="uid://brxv23pa76vt" path="res://src/Resources/ItemResource.cs" id="1_24vc5"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_24vc5"]
+
+[resource]
+script = ExtResource("1_24vc5")
+Id = "wood"
+Name = "Wood"
+Icon = SubResource("PlaceholderTexture2D_24vc5")
+metadata/_custom_type_script = "uid://brxv23pa76vt"

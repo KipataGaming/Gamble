@@ -127,14 +127,9 @@ text = "Stamina"
 
 [node name="InventoryUI" type="Control" parent="." unique_id=1247934103 node_paths=PackedStringArray("InventoryGrid")]
 layout_mode = 3
-anchor_left = 0.3
-anchor_top = 0.201
-anchor_right = 0.70000005
-anchor_bottom = 0.799
-offset_left = 0.3999939
-offset_top = 0.2519989
-offset_right = 88.599976
-offset_bottom = -0.25201416
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -143,15 +138,9 @@ InventoryGrid = NodePath("InventoryGrid")
 
 [node name="BackgroundPanel" type="Panel" parent="InventoryUI" unique_id=838198217]
 layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.033
-anchor_top = 0.0050000004
-anchor_right = 1.102
-anchor_bottom = 0.99500006
-offset_left = -0.11700058
-offset_top = 0.06499982
-offset_right = 0.0020141602
-offset_bottom = -0.06503296
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -168,18 +157,13 @@ offset_right = 0.13195801
 offset_bottom = 0.18999481
 text = "INVENTORY"
 label_settings = SubResource("LabelSettings_k2i6c")
+horizontal_alignment = 1
 
 [node name="InventoryGrid" type="GridContainer" parent="InventoryUI" unique_id=1370872993]
 layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.1
-anchor_top = 0.044000003
-anchor_right = 1.016
-anchor_bottom = 0.97
-offset_left = 0.099998474
-offset_top = -2.5280018
-offset_right = 0.21600342
-offset_bottom = 0.10998535
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/h_separation = 10

@@ -17,58 +17,41 @@ public partial class InventoryManager : Node
     }
 
     public void AddItem(ItemResource item, int amount = 1)
+{
+    if (item == null || amount <= 0) return;
+
+    if (!_itemDatabase.ContainsKey(item.Id))
     {
-        if (item == null || amount <= 0) return;
-
-        if (!_itemDatabase.ContainsKey(item.Id))
-        {
-            _itemDatabase[item.Id] = item;
-        }
-
-        if (_inventory.ContainsKey(item.Id))
-        {
-            _inventory[item.Id] += amount;
-        }
-        else
-        {
-            _inventory[item.Id] = amount;
-        }
-
-        GD.Print($"[Inventory] Added {amount}x {item.Name}. Total: {_inventory[item.Id]}");
-        
-        // Pass the updated total inventory amount to the EventBroker
-        EventBroker.TriggerItemCollected(item.Id, _inventory[item.Id]);
+        _itemDatabase[item.Id] = item;
     }
+
+    if (_inventory.ContainsKey(item.Id))
+    {
+        _inventory[item.Id] += amount;
+    }
+    else
+    {
+        _inventory[item.Id] = amount;
+    }
+
+    GD.Print($"[Inventory] Added {amount}x {item.Name}. Total: {_inventory[item.Id]}");
+
+    // THIS LINE WAS MISSING OR NOT ALWAYS FIRING
+    EventBroker.TriggerItemCollected(item.Id, _inventory[item.Id]);
+}
     public void AddItemById(string itemId, int amount = 1)
 {
-    GD.Print($"[InventoryManager] AddItemById called → {itemId} x{amount}");
-
     ItemResource item = GetItemData(itemId);
 
     if (item == null)
     {
-        // Temporary fallback so wood/stone work immediately
-        item = new ItemResource();
-        // We can't set Id/Name directly (private setters), so we use a trick:
-        // Just log it and add a dummy entry so the inventory still updates
-        GD.Print($"[InventoryManager] No ItemResource for '{itemId}' → using fallback");
-        
-        // Add it directly to the internal dictionary so UI still shows
-        if (!_inventory.ContainsKey(itemId))
-            _inventory[itemId] = 0;
-        
-        _inventory[itemId] += amount;
-        
-        // Trigger the UI event anyway
-        EventBroker.TriggerItemCollected(itemId, _inventory[itemId]);
-        
-        GD.Print($"[InventoryManager] SUCCESS (fallback): Added {itemId} x{amount}");
+        GD.PrintErr($"[InventoryManager] No ItemResource found for '{itemId}'");
         return;
     }
 
     AddItem(item, amount);
-    GD.Print($"[InventoryManager] SUCCESS: Added {item.Name} x{amount}");
-}    public bool RemoveItem(string itemId, int amount = 1)
+}
+    public bool RemoveItem(string itemId, int amount = 1)
     {
         if (!_inventory.ContainsKey(itemId) || _inventory[itemId] < amount)
         {

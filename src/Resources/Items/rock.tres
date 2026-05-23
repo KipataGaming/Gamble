@@ -1,0 +1,13 @@
+[gd_resource type="Resource" format=3 uid="uid://bwawuxum23tda"]
+
+[ext_resource type="Script" uid="uid://brxv23pa76vt" path="res://src/Resources/ItemResource.cs" id="1_5nud2"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_5nud2"]
+
+[resource]
+script = ExtResource("1_5nud2")
+Id = "rock"
+Name = "Rock"
+Icon = SubResource("PlaceholderTexture2D_5nud2")
+Rarity = 2
+metadata/_custom_type_script = "uid://brxv23pa76vt"
