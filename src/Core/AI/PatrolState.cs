@@ -30,11 +30,16 @@ public class PatrolState : IState
     {
         _patrolTimer += delta;
 
-        // Check for player
+        // === DEBUG: Check for player every frame ===
         if (_enemy.PotentialTarget != null && _enemy.CanSeeTarget())
         {
+            GD.Print("[PatrolState] → Player seen! Switching to Chase");
             _stateMachine.ChangeState(new ChaseState(_enemy, _stateMachine, _enemy.PotentialTarget));
             return;
+        }
+        else if (_enemy.PotentialTarget != null)
+        {
+            GD.Print("[PatrolState] Player nearby but not visible");
         }
 
         // Pick new point every few seconds
@@ -47,7 +52,6 @@ public class PatrolState : IState
 
     private void PickNewPatrolPoint()
     {
-        // Simple random point around current position
         Vector3 randomOffset = new Vector3(
             (float)GD.RandRange(-8, 8),
             0,

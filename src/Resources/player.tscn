@@ -53,7 +53,7 @@ debug_shape_thickness = 5
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5940175, 0)
 script = ExtResource("2_0kad6")
 AimRay = NodePath("../AimRay")
-Damage = 82
+Damage = 10
 
 [node name="ShovelNode" type="Node3D" parent="Node3D/Camera3D" unique_id=792601094]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5940175, 0)

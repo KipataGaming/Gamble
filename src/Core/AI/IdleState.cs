@@ -19,7 +19,7 @@ public class IdleState : IState
 
     public void Enter() 
     { 
-        GD.Print("Idling..."); 
+        GD.Print("Idling...");
         _timer = 0; 
     }
 
@@ -35,10 +35,15 @@ public class IdleState : IState
             return;
         }
 
-        // Check for player while idling
+        // === DEBUG: Check if we can see the player ===
         if (_enemy.PotentialTarget != null && _enemy.CanSeeTarget())
         {
+            GD.Print("[IdleState] → Player detected! Switching to Chase");
             _stateMachine.ChangeState(new ChaseState(_enemy, _stateMachine, _enemy.PotentialTarget));
+        }
+        else if (_enemy.PotentialTarget != null)
+        {
+            GD.Print("[IdleState] Player in detection zone but not visible yet");
         }
     }
 

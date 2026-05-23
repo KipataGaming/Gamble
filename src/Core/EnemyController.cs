@@ -12,12 +12,11 @@ public partial class EnemyController : CharacterBody3D, IDamageable
     [Export] public Area3D DetectionZone = null!;
     [Export] public RayCast3D VisionRay = null!;
     
-    [Export] public float FieldOfView = 90.0f;
+    [Export] public float FieldOfView = 90.0f;   // back to normal
     [Export] public float WalkSpeed = 3.0f;
 
     public Node3D PotentialTarget { get; private set; }
 
-    // Health
     public int Health = 100;
 
     private StateMachine _brain;
@@ -38,26 +37,20 @@ public partial class EnemyController : CharacterBody3D, IDamageable
     {
         _brain?.PhysicsUpdate(delta);
 
-        if (NavAgent == null)
-            return;
+        if (NavAgent == null) return;
 
         if (NavAgent.IsNavigationFinished())
-        {
             Velocity = Vector3.Zero;
-        }
         else
         {
             Vector3 nextPos = NavAgent.GetNextPathPosition();
-
             if (GlobalPosition.DistanceSquaredTo(nextPos) > 0.5f)
             {
                 Vector3 direction = GlobalPosition.DirectionTo(nextPos);
                 Velocity = direction * WalkSpeed;
             }
             else
-            {
                 Velocity = Vector3.Zero;
-            }
         }
 
         MoveAndSlide();
@@ -86,24 +79,28 @@ public partial class EnemyController : CharacterBody3D, IDamageable
 
     public bool CanSeeTarget()
     {
-        if (PotentialTarget == null || 
-            !GodotObject.IsInstanceValid(PotentialTarget) || 
-            PotentialTarget.IsQueuedForDeletion())
+        if (PotentialTarget == null || !GodotObject.IsInstanceValid(PotentialTarget))
             return false;
+
+        float distance = GlobalPosition.DistanceTo(PotentialTarget.GlobalPosition);
 
         Vector3 directionToTarget = GlobalPosition.DirectionTo(PotentialTarget.GlobalPosition);
-        Vector3 forwardDirection = -GlobalTransform.Basis.Z;
+        Vector3 forward = GlobalTransform.Basis.Z;   // ← FLIPPED (was backwards)
 
-        float angleToTarget = Mathf.RadToDeg(forwardDirection.AngleTo(directionToTarget));
+        float angle = Mathf.RadToDeg(forward.AngleTo(directionToTarget));
 
-        if (angleToTarget > (FieldOfView / 2.0f))
+        GD.Print($"[CanSeeTarget] Dist: {distance:F1}m | Angle: {angle:F1}° (FOV half: {FieldOfView/2:F1}°)");
+
+        if (angle > FieldOfView / 2f)
             return false;
+
+        if (VisionRay == null)
+            return true;
 
         VisionRay.TargetPosition = ToLocal(PotentialTarget.GlobalPosition);
         VisionRay.ForceRaycastUpdate();
 
-        GodotObject hitObj = VisionRay.GetCollider();
-        return hitObj != null && hitObj == PotentialTarget;
+        return VisionRay.GetCollider() == PotentialTarget;
     }
 
     public void TakeDamage(int amount)
@@ -113,11 +110,10 @@ public partial class EnemyController : CharacterBody3D, IDamageable
         Health -= amount;
         GD.Print($"[Enemy] OUCH! Took {amount} damage. Health: {Health}/100");
 
-        // Immediately retreat when damaged
-        if (_brain != null)
-        {
-            _brain.ChangeState(new RetreatState(this, _brain));
-        }
+        if (PotentialTarget != null)
+            LookAt(PotentialTarget.GlobalPosition, Vector3.Up);
+
+        _brain?.ChangeState(new RetreatState(this, _brain));
 
         if (Health <= 0)
             Die();
@@ -125,7 +121,7 @@ public partial class EnemyController : CharacterBody3D, IDamageable
 
     private void Die()
     {
-        GD.Print("[Enemy] UNIT ELIMINATED. Destroying body.");
+        GD.Print("[Enemy] UNIT ELIMINATED.");
         QueueFree();
     }
 }
