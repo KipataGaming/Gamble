@@ -1,0 +1,34 @@
+[gd_scene format=3 uid="uid://bqisxtqchk05y"]
+
+[ext_resource type="Script" uid="uid://b6kiteehrbjcv" path="res://src/Core/WaterArea.cs" id="1_bxsj0"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_byw3d"]
+albedo_color = Color(0.20784314, 1, 1, 0.47058824)
+metallic = 1.0
+metallic_specular = 1.0
+clearcoat_enabled = true
+clearcoat_roughness = 0.04
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_48183"]
+material = SubResource("StandardMaterial3D_byw3d")
+size = Vector2(50, 50)
+subdivide_width = 266
+subdivide_depth = 384
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_j6147"]
+size = Vector3(55, 50, 55)
+
+[node name="WaterArea" type="Node3D" unique_id=1897829139 groups=["Swimming"]]
+script = ExtResource("1_bxsj0")
+
+[node name="WaterMesh" type="MeshInstance3D" parent="." unique_id=1079896951]
+transparency = 0.81
+cast_shadow = 2
+extra_cull_margin = 9473.21
+mesh = SubResource("PlaneMesh_48183")
+
+[node name="WaterDetection" type="Area3D" parent="." unique_id=2052990874]
+priority = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WaterDetection" unique_id=148176323]
+shape = SubResource("BoxShape3D_j6147")

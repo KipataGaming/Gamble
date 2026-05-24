@@ -16,6 +16,7 @@
 [ext_resource type="PackedScene" uid="uid://cdosp8phibnl0" path="res://src/Scenes/rock.tscn" id="12_hg6nk"]
 [ext_resource type="PackedScene" uid="uid://55wg7dtq1523" path="res://src/Scenes/tree.tscn" id="13_e4c6v"]
 [ext_resource type="PackedScene" uid="uid://dyf58if01mxcx" path="res://src/Scenes/TVset.tscn" id="14_e4c6v"]
+[ext_resource type="PackedScene" uid="uid://bqisxtqchk05y" path="res://src/Scenes/water_area.tscn" id="17_6dq5p"]
 
 [sub_resource type="Gradient" id="Gradient_0vhqb"]
 offsets = PackedFloat32Array(0.2542373, 1)
@@ -61,7 +62,7 @@ polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
 [node name="Main" type="Node3D" unique_id=194370206]
 script = ExtResource("1_u2m37")
 
-[node name="Player" parent="." unique_id=595063796 node_paths=PackedStringArray("InteractionPrompt") instance=ExtResource("2_ojnsd")]
+[node name="Player" parent="." unique_id=595063796 node_paths=PackedStringArray("InteractionPrompt") groups=["Swimming"] instance=ExtResource("2_ojnsd")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7253587, 0.5, -0.07812342)
 InteractionPrompt = NodePath("../UI/InteractionPrompt")
 
@@ -276,3 +277,6 @@ BlackjackUI = ExtResource("6_6dq5p")
 
 [node name="BlackjackUI" parent="." unique_id=112758883 instance=ExtResource("6_6dq5p")]
 visible = false
+
+[node name="WaterArea" parent="." unique_id=1897829139 instance=ExtResource("17_6dq5p")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.595405, 3.5080156, 38.646584)

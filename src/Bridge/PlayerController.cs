@@ -164,6 +164,7 @@ namespace Game.Bridge
     if (keyEvent2.Keycode == Key.Key5) { GD.Print("Pressed 5"); EquipTool(4); }
     if (keyEvent2.Keycode == Key.Key6) { GD.Print("Pressed 6"); EquipTool(5); }
     if (keyEvent2.Keycode == Key.Key7) { GD.Print("Pressed 7"); EquipTool(6); }
+    if (keyEvent2.Keycode == Key.Key8) { GD.Print("Pressed 8"); EquipTool(7); }
 
     // Pass time
     if (keyEvent2.Keycode == Key.T)
@@ -192,35 +193,76 @@ namespace Game.Bridge
         }
 
         public override void _PhysicsProcess(double delta)
+{
+    if (GetTree().Paused || _isDead) return;
+
+    bool inWater = IsInWater(); // We'll add this helper
+
+    Vector3 velocity = Velocity;
+
+    if (inWater)
+    {
+        // === SWIMMING PHYSICS ===
+        // Light gravity / buoyancy
+        velocity.Y -= 1.5f * (float)delta;
+
+        // Swim up with jump
+        if (Input.IsActionPressed("jump"))
+            velocity.Y = 5.0f;
+
+        // Slower movement in water
+        Vector2 inputDir = Input.GetVector("move_left", "move_right", "move_forward", "move_backward");
+        Vector3 direction = (Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
+
+        float swimSpeed = 4.0f;
+
+        if (direction != Vector3.Zero)
         {
-            if (GetTree().Paused || _isDead) return;
-
-            Vector3 velocity = Velocity;
-
-            if (!IsOnFloor())
-                velocity.Y -= Gravity * (float)delta;
-
-            if (Input.IsActionJustPressed("jump") && IsOnFloor())
-                velocity.Y = JumpVelocity;
-
-            Vector2 inputDir = Input.GetVector("move_left", "move_right", "move_forward", "move_backward");
-            Vector3 direction = (Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
-
-            if (direction != Vector3.Zero)
-            {
-                velocity.X = direction.X * Speed;
-                velocity.Z = direction.Z * Speed;
-            }
-            else
-            {
-                velocity.X = Mathf.MoveToward(Velocity.X, 0, Speed);
-                velocity.Z = Mathf.MoveToward(Velocity.Z, 0, Speed);
-            }
-
-            Velocity = velocity;
-            MoveAndSlide();
+            velocity.X = direction.X * swimSpeed;
+            velocity.Z = direction.Z * swimSpeed;
         }
+        else
+        {
+            velocity.X = Mathf.MoveToward(Velocity.X, 0, swimSpeed);
+            velocity.Z = Mathf.MoveToward(Velocity.Z, 0, swimSpeed);
+        }
+    }
+    else
+    {
+        // === NORMAL LAND MOVEMENT ===
+        if (!IsOnFloor())
+            velocity.Y -= Gravity * (float)delta;
 
+        if (Input.IsActionJustPressed("jump") && IsOnFloor())
+            velocity.Y = JumpVelocity;
+
+        Vector2 inputDir = Input.GetVector("move_left", "move_right", "move_forward", "move_backward");
+        Vector3 direction = (Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
+
+        if (direction != Vector3.Zero)
+        {
+            velocity.X = direction.X * Speed;
+            velocity.Z = direction.Z * Speed;
+        }
+        else
+        {
+            velocity.X = Mathf.MoveToward(Velocity.X, 0, Speed);
+            velocity.Z = Mathf.MoveToward(Velocity.Z, 0, Speed);
+        }
+    }
+
+    Velocity = velocity;
+    MoveAndSlide();
+}
+
+        private bool _isInWater = false;
+
+public void SetInWater(bool value)
+{
+    _isInWater = value;
+}
+
+public bool IsInWater() => _isInWater;
         public void TakeDamage(int amount)
         {
             if (_isDead || PlayerStatsManager.Instance.CurrentHealth <= 0) return;
@@ -296,57 +338,93 @@ namespace Game.Bridge
         }
 
         private void HandleToolUse()
+{
+    if (CurrentWeapon == null) return;
+
+    string toolCategory = CurrentWeapon.ToolCategory.Trim().ToLower();
+
+    // === FISHING ROD ===
+    if (toolCategory == "fishingrod" || toolCategory == "fishing")
+    {
+        if (IsInWater())
         {
-            if (CurrentWeapon == null) return;
-            string toolCategory = CurrentWeapon.ToolCategory.Trim().ToLower();
-            float staminaCost = 0f;
+            StartFishing();
+        }
+        else
+        {
+            GD.Print("[Fishing] You need to be in water to fish.");
+        }
+        return;
+    }
 
-            if (toolCategory == "axe" || toolCategory == "pickaxe") staminaCost = 5f;
-            else if (toolCategory == "shovel" || toolCategory == "wateringcan") staminaCost = 3f;
-            else if (toolCategory == "scythe" || toolCategory == "weapon") staminaCost = 2f;
-            else if (toolCategory == "seed") staminaCost = 1f;
+    // === Normal tool logic ===
+    float staminaCost = 0f;
 
-            if (toolCategory == "weapon")
-            {
-                if (PlayerStatsManager.Instance.TryConsumeStamina(staminaCost))
-                    CurrentWeapon.PerformAttack();
-                return;
-            }
+    if (toolCategory == "axe" || toolCategory == "pickaxe") staminaCost = 5f;
+    else if (toolCategory == "shovel" || toolCategory == "wateringcan") staminaCost = 3f;
+    else if (toolCategory == "scythe" || toolCategory == "weapon") staminaCost = 2f;
+    else if (toolCategory == "seed") staminaCost = 1f;
 
-            if (InteractionRay == null) return;
-            InteractionRay.ForceRaycastUpdate();
-            if (InteractionRay.IsColliding())
-            {
-                Node collider = InteractionRay.GetCollider() as Node;
-                ResourceNodeBridge hitResource = FindResourceBridgeParent(collider);
-                if (hitResource != null)
-                {
-                    if (toolCategory == "axe" && PlayerStatsManager.Instance.TryConsumeStamina(staminaCost))
-                        hitResource.Interact("Chop");
-                    else if (toolCategory == "pickaxe" && PlayerStatsManager.Instance.TryConsumeStamina(staminaCost))
-                        hitResource.Interact("Mine");
-                    return;
-                }
+    if (toolCategory == "weapon")
+    {
+        if (PlayerStatsManager.Instance.TryConsumeStamina(staminaCost))
+            CurrentWeapon.PerformAttack();
+        return;
+    }
 
-                FarmGridBridge hitGarden = FindFarmBridgeParent(collider);
-                if (hitGarden != null)
-                {
-                    Vector3 hitPoint = InteractionRay.GetCollisionPoint();
-                    Vector2I gridCoord = hitGarden.WorldToGridCoordinates(hitPoint);
-                    string actionToSend = "";
-                    string cropIdToPlant = "";
+    if (InteractionRay == null) return;
+    InteractionRay.ForceRaycastUpdate();
 
-                    if (toolCategory == "shovel") actionToSend = "Till";
-                    else if (toolCategory == "wateringcan") actionToSend = "Water";
-                    else if (toolCategory == "seed") { actionToSend = "Plant"; cropIdToPlant = "Carrot"; }
-                    else if (toolCategory == "scythe") actionToSend = "Harvest";
+    if (InteractionRay.IsColliding())
+    {
+        Node collider = InteractionRay.GetCollider() as Node;
 
-                    if (!string.IsNullOrEmpty(actionToSend) && PlayerStatsManager.Instance.TryConsumeStamina(staminaCost))
-                        hitGarden.Interact(gridCoord, actionToSend, cropIdToPlant);
-                }
-            }
+        ResourceNodeBridge hitResource = FindResourceBridgeParent(collider);
+        if (hitResource != null)
+        {
+            if (toolCategory == "axe" && PlayerStatsManager.Instance.TryConsumeStamina(staminaCost))
+                hitResource.Interact("Chop");
+            else if (toolCategory == "pickaxe" && PlayerStatsManager.Instance.TryConsumeStamina(staminaCost))
+                hitResource.Interact("Mine");
+            return;
         }
 
+        FarmGridBridge hitGarden = FindFarmBridgeParent(collider);
+        if (hitGarden != null)
+        {
+            Vector3 hitPoint = InteractionRay.GetCollisionPoint();
+            Vector2I gridCoord = hitGarden.WorldToGridCoordinates(hitPoint);
+            string actionToSend = "";
+            string cropIdToPlant = "";
+
+            if (toolCategory == "shovel") actionToSend = "Till";
+            else if (toolCategory == "wateringcan") actionToSend = "Water";
+            else if (toolCategory == "seed") { actionToSend = "Plant"; cropIdToPlant = "Carrot"; }
+            else if (toolCategory == "scythe") actionToSend = "Harvest";
+
+            if (!string.IsNullOrEmpty(actionToSend) && PlayerStatsManager.Instance.TryConsumeStamina(staminaCost))
+                hitGarden.Interact(gridCoord, actionToSend, cropIdToPlant);
+        }
+    }
+}
+        private async void StartFishing()
+        {
+            GD.Print("[Fishing] Casting line...");
+
+            float waitTime = (float)GD.RandRange(2.5, 5.0);
+            await ToSignal(GetTree().CreateTimer(waitTime), "timeout");
+
+            if (GD.Randf() < 0.75f) // 75% success chance
+            {
+                GD.Print("[Fishing] You got a bite!");
+                InventoryManager.Instance.AddItemById("fish", 1);
+                GD.Print("[Fishing] You caught a Fish!");
+            }
+            else
+            {
+                GD.Print("[Fishing] The fish got away...");
+            }
+        }
         private FarmGridBridge FindFarmBridgeParent(Node node)
         {
             Node current = node;

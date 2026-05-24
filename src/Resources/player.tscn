@@ -18,7 +18,7 @@ script = ExtResource("1_0gx41")
 PlayerCamera = NodePath("Node3D/Camera3D")
 InteractionRay = NodePath("Node3D/Camera3D/InteractRayCast")
 CurrentWeapon = NodePath("WeaponNode/AxeNode")
-Equipment = [NodePath("WeaponNode"), NodePath("WeaponNode/ShovelNode"), NodePath("WeaponNode/WateringCanNode"), NodePath("WeaponNode/SeedNode"), NodePath("WeaponNode/ScytheNode"), NodePath("WeaponNode/AxeNode"), NodePath("WeaponNode/PickaxeNode")]
+Equipment = [NodePath("WeaponNode"), NodePath("WeaponNode/ShovelNode"), NodePath("WeaponNode/WateringCanNode"), NodePath("WeaponNode/SeedNode"), NodePath("WeaponNode/ScytheNode"), NodePath("WeaponNode/AxeNode"), NodePath("WeaponNode/PickaxeNode"), NodePath("WeaponNode/FishingRodNode")]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=866314326]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
@@ -54,7 +54,7 @@ script = ExtResource("2_0kad6")
 AimRay = NodePath("../Node3D/Camera3D/AimRay")
 Damage = 10
 
-[node name="WeaponNode" type="Node3D" parent="WeaponNode" unique_id=752226767 node_paths=PackedStringArray("AimRay")]
+[node name="WeaponNode" type="Node3D" parent="WeaponNode" unique_id=752226767 node_paths=PackedStringArray("AimRay") groups=["Player", "Swimming"]]
 script = ExtResource("2_0kad6")
 AimRay = NodePath("../../Node3D/Camera3D/AimRay")
 
@@ -89,4 +89,10 @@ AimRay = NodePath("../../Node3D/Camera3D/AimRay")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5940175, 0)
 script = ExtResource("2_0kad6")
 ToolCategory = "Pickaxe"
+AimRay = NodePath("../../Node3D/Camera3D/AimRay")
+
+[node name="FishingRodNode" type="Node3D" parent="WeaponNode" unique_id=1742103777 node_paths=PackedStringArray("AimRay")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5940175, 0)
+script = ExtResource("2_0kad6")
+ToolCategory = "FishingRod"
 AimRay = NodePath("../../Node3D/Camera3D/AimRay")
