@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://b87l7gabsals5"]
+
+[ext_resource type="Script" uid="uid://dthk2mg3206df" path="res://src/Bridge/SecurityCamera.cs" id="1_pckdy"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_d0nv5"]
+size = Vector3(0.5, 0.5, 0.8)
+
+[sub_resource type="Environment" id="Environment_pckdy"]
+
+[sub_resource type="CameraAttributesPhysical" id="CameraAttributesPhysical_pckdy"]
+
+[sub_resource type="Compositor" id="Compositor_h6ac5"]
+
+[node name="SecurityCamera" type="Node3D" unique_id=1042296392 node_paths=PackedStringArray("Viewport", "Camera")]
+script = ExtResource("1_pckdy")
+Viewport = NodePath("Viewport")
+Camera = NodePath("Viewport/Camera")
+
+[node name="CameraModel" type="MeshInstance3D" parent="." unique_id=832392129]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.23450422)
+mesh = SubResource("BoxMesh_d0nv5")
+
+[node name="Viewport" type="SubViewport" parent="." unique_id=562231398]
+size = Vector2i(640, 360)
+
+[node name="Camera" type="Camera3D" parent="Viewport" unique_id=792769630]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.0595814)
+visible = false
+environment = SubResource("Environment_pckdy")
+attributes = SubResource("CameraAttributesPhysical_pckdy")
+compositor = SubResource("Compositor_h6ac5")
