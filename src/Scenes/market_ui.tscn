@@ -2,14 +2,28 @@
 
 [ext_resource type="Script" uid="uid://bgjvd425li8gu" path="res://src/Bridge/MarketUI.cs" id="1_k5nhb"]
 
+[sub_resource type="LabelSettings" id="LabelSettings_by87n"]
+
 [node name="MarketUI" type="Control" unique_id=2105530063 node_paths=PackedStringArray("SellList", "BuyList")]
 layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+anchor_right = 0.9990001
+anchor_bottom = 1.0
+offset_right = 0.15185547
+offset_bottom = 10.0
 script = ExtResource("1_k5nhb")
 SellList = NodePath("HBoxContainer/SellPanel/SellList")
 BuyList = NodePath("HBoxContainer/BuyPanel/BuyList")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1094669928]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.98800004
+offset_left = -70.0
+offset_top = -111.0
+offset_right = 111.0
+offset_bottom = 117.895996
+color = Color(0.4117647, 0.4117647, 0.4117647, 1)
 
 [node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1172486631]
 layout_mode = 0
@@ -18,13 +32,18 @@ offset_bottom = 646.0
 alignment = 1
 
 [node name="SellPanel" type="VBoxContainer" parent="HBoxContainer" unique_id=831983251]
+custom_minimum_size = Vector2(500, 500)
 layout_mode = 2
 
 [node name="Label" type="Label" parent="HBoxContainer/SellPanel" unique_id=1761443093]
 layout_mode = 2
 text = "Sell"
+label_settings = SubResource("LabelSettings_by87n")
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="SellList" type="VBoxContainer" parent="HBoxContainer/SellPanel" unique_id=1657548378]
+custom_minimum_size = Vector2(500, 300)
 layout_mode = 2
 
 [node name="BuyPanel" type="VBoxContainer" parent="HBoxContainer" unique_id=1114555288]
@@ -36,5 +55,6 @@ layout_mode = 2
 text = "Buy"
 
 [node name="BuyList" type="VBoxContainer" parent="HBoxContainer/BuyPanel" unique_id=1558433314]
+custom_minimum_size = Vector2(500, 300)
 layout_mode = 2
 alignment = 1

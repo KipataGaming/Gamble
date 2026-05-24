@@ -1,0 +1,185 @@
+[gd_scene format=3 uid="uid://fpagwytqq7tv"]
+
+[ext_resource type="Script" uid="uid://cyib338715oua" path="res://src/Core/BlackjackUI.cs" id="1_na00k"]
+
+[sub_resource type="FontFile" id="FontFile_na00k"]
+subpixel_positioning = 0
+msdf_pixel_range = 14
+msdf_size = 128
+cache/0/variation_coordinates = {}
+cache/0/face_index = 0
+cache/0/embolden = 0.0
+cache/0/transform = Transform2D(1, 0, 0, 1, 0, 0)
+cache/0/spacing_top = 0
+cache/0/spacing_bottom = 0
+cache/0/spacing_space = 0
+cache/0/spacing_glyph = 0
+cache/0/baseline_offset = 0.0
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/14/0/ascent = 0.0
+cache/0/14/0/descent = 0.0
+cache/0/14/0/underline_position = 0.0
+cache/0/14/0/underline_thickness = 0.0
+cache/0/14/0/scale = 1.0
+cache/0/24/0/ascent = 0.0
+cache/0/24/0/descent = 0.0
+cache/0/24/0/underline_position = 0.0
+cache/0/24/0/underline_thickness = 0.0
+cache/0/24/0/scale = 1.0
+
+[sub_resource type="Theme" id="Theme_x0d20"]
+default_font = SubResource("FontFile_na00k")
+default_font_size = 16
+
+[sub_resource type="LabelSettings" id="LabelSettings_na00k"]
+
+[node name="BlackjackUI" type="Control" unique_id=112758883 node_paths=PackedStringArray("MoneyDisplay", "PlayerHandText", "DealerHandText", "BetInput", "PlaceBetButton", "HitButton", "StandButton", "DoubleButton", "NewRoundButton", "RebetButton", "ExitButton", "ResultLabel")]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_right = 1920.0
+offset_bottom = 1080.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1.005, 1.005)
+script = ExtResource("1_na00k")
+MoneyDisplay = NodePath("VBoxContainer/Top Bar/MoneyDisplay")
+PlayerHandText = NodePath("VBoxContainer/Hands/Player/PlayerHandText")
+DealerHandText = NodePath("VBoxContainer/Hands/Dealer/DealerHandText")
+BetInput = NodePath("VBoxContainer/Bet Area/BetInput")
+PlaceBetButton = NodePath("VBoxContainer/Bet Area/PlaceBetButton")
+HitButton = NodePath("VBoxContainer/Action Buttons/HitButton")
+StandButton = NodePath("VBoxContainer/Action Buttons/StandButton")
+DoubleButton = NodePath("VBoxContainer/Action Buttons/DoubleButton")
+NewRoundButton = NodePath("VBoxContainer/HBoxContainer/NewRoundButton")
+RebetButton = NodePath("VBoxContainer/HBoxContainer/NewRoundButton")
+ExitButton = NodePath("VBoxContainer/HBoxContainer/ExitButton")
+ResultLabel = NodePath("VBoxContainer/ResultLabel")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1988428922]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.319
+anchor_top = -0.328
+anchor_right = 0.296
+anchor_bottom = 0.29500002
+offset_left = 0.53967285
+offset_top = 0.011169434
+offset_right = -0.16082764
+offset_bottom = 36.62384
+color = Color(0.21950102, 0.21950102, 0.21950102, 1)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1046846392]
+custom_minimum_size = Vector2(1920, 1080)
+layout_mode = 0
+offset_left = -250.0
+offset_top = -312.905
+offset_right = 1670.0
+offset_bottom = 767.095
+scale = Vector2(2.54, 2.54)
+theme = SubResource("Theme_x0d20")
+theme_override_constants/separation = 4
+
+[node name="Top Bar" type="HBoxContainer" parent="VBoxContainer" unique_id=2026521622]
+layout_mode = 2
+
+[node name="Blackjack" type="Label" parent="VBoxContainer/Top Bar" unique_id=1055678895]
+layout_mode = 2
+text = "Blackjack"
+
+[node name="MoneyDisplay" type="Label" parent="VBoxContainer/Top Bar" unique_id=1097622285]
+layout_mode = 2
+label_settings = SubResource("LabelSettings_na00k")
+
+[node name="Hands" type="HBoxContainer" parent="VBoxContainer" unique_id=87749665]
+layout_mode = 2
+
+[node name="Player" type="VBoxContainer" parent="VBoxContainer/Hands" unique_id=267646831]
+layout_mode = 2
+
+[node name="Your Hand" type="Label" parent="VBoxContainer/Hands/Player" unique_id=1932208249]
+layout_mode = 2
+text = "Your Hand"
+
+[node name="PlayerHandText" type="Label" parent="VBoxContainer/Hands/Player" unique_id=215008489]
+layout_mode = 2
+
+[node name="Dealer" type="VBoxContainer" parent="VBoxContainer/Hands" unique_id=2146244600]
+layout_mode = 2
+
+[node name="Dealer Hand" type="Label" parent="VBoxContainer/Hands/Dealer" unique_id=313195049]
+layout_mode = 2
+text = "Dealers Hand"
+
+[node name="DealerHandText" type="Label" parent="VBoxContainer/Hands/Dealer" unique_id=654399121]
+layout_mode = 2
+text = "
+"
+
+[node name="Bet Area" type="HBoxContainer" parent="VBoxContainer" unique_id=317682930]
+custom_minimum_size = Vector2(-1.055, 0)
+layout_mode = 2
+
+[node name="Bet" type="Label" parent="VBoxContainer/Bet Area" unique_id=42730410]
+layout_mode = 2
+
+[node name="BetInput" type="LineEdit" parent="VBoxContainer/Bet Area" unique_id=895108780 node_paths=PackedStringArray("shortcut_context")]
+custom_minimum_size = Vector2(100, 20)
+layout_mode = 2
+shortcut_context = NodePath(".")
+max_length = 5
+draw_control_chars = true
+caret_blink = true
+caret_force_displayed = true
+
+[node name="PlaceBetButton" type="Button" parent="VBoxContainer/Bet Area" unique_id=344719729]
+layout_mode = 2
+text = "Place Bet
+"
+
+[node name="Action Buttons" type="HBoxContainer" parent="VBoxContainer" unique_id=568342072]
+layout_mode = 2
+
+[node name="HitButton" type="Button" parent="VBoxContainer/Action Buttons" unique_id=1209709768]
+layout_mode = 2
+text = "HIT"
+
+[node name="StandButton" type="Button" parent="VBoxContainer/Action Buttons" unique_id=1485342483]
+layout_mode = 2
+text = "Stand
+"
+
+[node name="DoubleButton" type="Button" parent="VBoxContainer/Action Buttons" unique_id=2137124886]
+layout_mode = 2
+text = "Double"
+
+[node name="Player" type="VBoxContainer" parent="VBoxContainer/Action Buttons/DoubleButton" unique_id=749910193]
+layout_mode = 0
+
+[node name="Your Hand" type="Label" parent="VBoxContainer/Action Buttons/DoubleButton/Player" unique_id=1934080895]
+layout_mode = 2
+
+[node name="PlayerHandText" type="Label" parent="VBoxContainer/Action Buttons/DoubleButton/Player" unique_id=366341813]
+layout_mode = 2
+
+[node name="ResultLabel" type="Label" parent="VBoxContainer" unique_id=2012979485]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=49392551]
+layout_mode = 2
+
+[node name="ExitButton" type="Button" parent="VBoxContainer/HBoxContainer" unique_id=1027931689]
+layout_mode = 2
+text = "EXIT"
+
+[node name="NewRoundButton" type="Button" parent="VBoxContainer/HBoxContainer" unique_id=2002415790]
+layout_mode = 2
+text = "Next Hand
+"

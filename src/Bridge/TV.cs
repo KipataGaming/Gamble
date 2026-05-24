@@ -1,88 +1,71 @@
 using Godot;
+using System.Collections.Generic;
 
 public partial class TV : Node3D
 {
     [Export] public VideoStreamPlayer VideoPlayer;
 
+    [Export] public string VideoFolderPath = "res://src/Resources/Videos/";
+
+    private List<string> _videoPaths = new List<string>();
+    private int _currentChannel = 0;
+
     public override void _Ready()
     {
         if (VideoPlayer == null)
-        {
-            // Try to find it automatically if not assigned
             VideoPlayer = GetNodeOrNull<VideoStreamPlayer>("SubViewport/VideoStreamPlayer");
-        }
+
+        LoadVideosFromFolder(VideoFolderPath);
     }
 
-    /// <summary>
-    /// Play a video from a given path (must be .ogv file)
-    /// </summary>
-    public void PlayVideo(string videoPath)
+    private void LoadVideosFromFolder(string folderPath)
     {
-        if (VideoPlayer == null) return;
+        _videoPaths.Clear();
 
-        var stream = GD.Load<VideoStream>(videoPath);
+        var dir = DirAccess.Open(folderPath);
+        if (dir == null)
+        {
+            GD.PrintErr($"[TV] Could not open video folder: {folderPath}");
+            return;
+        }
+
+        dir.ListDirBegin();
+        string fileName = dir.GetNext();
+
+        while (fileName != "")
+        {
+            if (!dir.CurrentIsDir() && fileName.EndsWith(".ogv"))
+            {
+                _videoPaths.Add(folderPath + fileName);
+            }
+            fileName = dir.GetNext();
+        }
+        dir.ListDirEnd();
+
+        GD.Print($"[TV] Loaded {_videoPaths.Count} video(s) from {folderPath}");
+    }
+
+    public void OnPlayerInteract()
+    {
+        if (_videoPaths.Count == 0) return;
+
+        // Cycle to next channel
+        _currentChannel = (_currentChannel + 1) % _videoPaths.Count;
+        PlayCurrentChannel();
+    }
+
+    private void PlayCurrentChannel()
+    {
+        if (_videoPaths.Count == 0 || VideoPlayer == null) return;
+
+        string path = _videoPaths[_currentChannel];
+        var stream = GD.Load<VideoStream>(path);
+
         if (stream != null)
         {
             VideoPlayer.Stream = stream;
             VideoPlayer.Play();
-            GD.Print($"[TV] Playing: {videoPath}");
-        }
-        else
-        {
-            GD.PrintErr($"[TV] Could not load video: {videoPath}");
+            GD.Print($"[TV] Channel {_currentChannel + 1}: {path}");
         }
     }
-
-    public void Play()
-    {
-        if (VideoPlayer != null)
-            VideoPlayer.Play();
-    }
-
-    public void Pause()
-    {
-        if (VideoPlayer != null)
-            VideoPlayer.Paused = !VideoPlayer.Paused;
-    }
-
-    public void Stop()
-    {
-        if (VideoPlayer != null)
-            VideoPlayer.Stop();
-    }
-
-    /// <summary>
-    /// Call this when the player interacts with the TV
-    /// </summary>
-    public void Interact()
-    {
-        // For now just toggle pause/play
-        if (VideoPlayer != null && VideoPlayer.IsPlaying())
-        {
-            Pause();
-        }
-        else
-        {
-            Play();
-        }
-    }
-    /// <summary>
-/// Called when the player interacts with this TV (press E)
-/// </summary>
-public void OnPlayerInteract()
-{
-    if (VideoPlayer == null) return;
-
-    if (VideoPlayer.IsPlaying())
-    {
-        VideoPlayer.Paused = !VideoPlayer.Paused; // Toggle pause
-    }
-    else
-    {
-        VideoPlayer.Play();
-    }
-
-    GD.Print("[TV] Player interacted with TV");
-}
-
 }

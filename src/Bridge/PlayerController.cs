@@ -2,6 +2,7 @@
 using Godot;
 using Game.Core;
 using Game.Resources;
+using Game.Bridge;
 
 namespace Game.Bridge
 {
@@ -21,8 +22,8 @@ namespace Game.Bridge
         [Export] public Label InteractionPrompt;
 
         private TV _currentTV;
+        private Node _currentInteractable;
 
-        // === Respawn & Death fields ===
         private bool _isDead = false;
         private Vector3 _spawnPosition;
 
@@ -39,28 +40,34 @@ namespace Game.Bridge
             InteractionRay.ForceRaycastUpdate();
 
             string promptText = "";
+            _currentInteractable = null;
 
             if (InteractionRay.IsColliding())
             {
                 Node collider = InteractionRay.GetCollider() as Node;
-                TV tv = FindTVParent(collider);
 
-                if (tv != null)
+                Node current = collider;
+                while (current != null)
                 {
-                    _currentTV = tv;
-                    promptText = "Press F to use TV";
-                }
-                else
-                {
-                    _currentTV = null;
+                    if (current is TV tv)
+                    {
+                        _currentInteractable = tv;
+                        promptText = "Press F to use TV";
+                        break;
+                    }
+
+                    if (current.IsInGroup("blackjack_table") || 
+                        current.Name.ToString().ToLower().Contains("blackjack"))
+                    {
+                        _currentInteractable = current;
+                        promptText = "Press F to play Blackjack";
+                        break;
+                    }
+
+                    current = current.GetParent();
                 }
             }
-            else
-            {
-                _currentTV = null;
-            }
 
-            // Show or hide prompt
             if (InteractionPrompt != null)
             {
                 if (!string.IsNullOrEmpty(promptText))
@@ -74,12 +81,11 @@ namespace Game.Bridge
                 }
             }
 
-            // Interaction input
             if (Input.IsActionJustPressed("interact"))
             {
-                if (_currentTV != null)
+                if (_currentInteractable != null && _currentInteractable.HasMethod("OnPlayerInteract"))
                 {
-                    _currentTV.OnPlayerInteract();
+                    _currentInteractable.Call("OnPlayerInteract");
                 }
                 else
                 {
@@ -95,7 +101,6 @@ namespace Game.Bridge
         {
             if (GetTree().Paused) return;
 
-            // Respawn with R when dead
             if (_isDead && @event is InputEventKey keyEvent && keyEvent.Pressed && !keyEvent.Echo && keyEvent.Keycode == Key.R)
             {
                 Respawn();
@@ -104,9 +109,13 @@ namespace Game.Bridge
 
             if (_isDead) return;
 
-            // Camera rotation
+            // === CAMERA LOCK WHEN BLACKJACK UI IS OPEN ===
             if (@event is InputEventMouseMotion mouseMotion && PlayerCamera != null)
             {
+                var blackjackUI = GetTree().Root.GetNodeOrNull<BlackjackUI>("/root/BlackjackUI");
+                if (blackjackUI != null && blackjackUI.Visible)
+                    return; // Lock camera
+
                 RotateY(-mouseMotion.Relative.X * MouseSensitivity);
                 PlayerCamera.RotateX(-mouseMotion.Relative.Y * MouseSensitivity);
 
@@ -115,7 +124,6 @@ namespace Game.Bridge
                 PlayerCamera.Rotation = rot;
             }
 
-            // Weapon swapping + debug keys
             if (@event is InputEventKey keyEvent2 && keyEvent2.Pressed && !keyEvent2.Echo)
             {
                 if (keyEvent2.Keycode == Key.Key1) EquipTool(0);
@@ -126,7 +134,6 @@ namespace Game.Bridge
                 if (keyEvent2.Keycode == Key.Key6) EquipTool(5);
                 if (keyEvent2.Keycode == Key.Key7) EquipTool(6);
 
-                // Debug keys
                 if (keyEvent2.Keycode == Key.M)
                 {
                     bool sold = MarketManager.Instance.SellItem("wood", 1);
@@ -172,14 +179,11 @@ namespace Game.Bridge
             MoveAndSlide();
         }
 
-        // ==================== DAMAGE & DEATH ====================
         public void TakeDamage(int amount)
         {
             if (_isDead || PlayerStatsManager.Instance.CurrentHealth <= 0) return;
-
             GD.Print($"[Player] -> HIT! Took {amount} damage.");
             PlayerStatsManager.Instance.DecreaseHealth(amount);
-
             if (PlayerStatsManager.Instance.CurrentHealth <= 0)
                 Die();
         }
@@ -198,37 +202,29 @@ namespace Game.Bridge
             GlobalPosition = _spawnPosition;
             Velocity = Vector3.Zero;
             PlayerStatsManager.Instance.ResetStats();
-            GD.Print("[Player] Respawned at starting position with full health!");
+            GD.Print("[Player] Respawned!");
         }
 
-        // ==================== ORIGINAL METHODS ====================
         private void EquipTool(int slotIndex)
         {
             if (slotIndex < 0 || slotIndex >= Equipment.Count) return;
-
             WeaponBridge selectedTool = Equipment[slotIndex];
             if (selectedTool == null) return;
 
-            foreach (WeaponBridge tool in Equipment)
-            {
-                if (tool != null)
-                    tool.Visible = false;
-            }
+            foreach (var tool in Equipment)
+                if (tool != null) tool.Visible = false;
 
             CurrentWeapon = selectedTool;
             CurrentWeapon.Visible = true;
-            GD.Print($"[Player] Equipped Slot {slotIndex + 1}: {CurrentWeapon.ToolCategory}");
         }
 
         private void HandlePickup()
         {
             if (InteractionRay == null) return;
-
             InteractionRay.ForceRaycastUpdate();
             if (InteractionRay.IsColliding())
             {
                 Node collider = InteractionRay.GetCollider() as Node;
-
                 if (collider != null && collider.HasMethod("InteractAndPickup"))
                 {
                     Variant result = collider.Call("InteractAndPickup");
@@ -236,7 +232,6 @@ namespace Game.Bridge
                     {
                         ItemResource item = (ItemResource)result.AsGodotObject();
                         InventoryManager.Instance.AddItem(item, 1);
-                        GD.Print($"[Player] Picked up: {item.Name}");
                     }
                 }
             }
@@ -245,7 +240,6 @@ namespace Game.Bridge
         private void HandleToolUse()
         {
             if (CurrentWeapon == null) return;
-
             string toolCategory = CurrentWeapon.ToolCategory.Trim().ToLower();
             float staminaCost = 0f;
 
@@ -263,11 +257,9 @@ namespace Game.Bridge
 
             if (InteractionRay == null) return;
             InteractionRay.ForceRaycastUpdate();
-
             if (InteractionRay.IsColliding())
             {
                 Node collider = InteractionRay.GetCollider() as Node;
-
                 ResourceNodeBridge hitResource = FindResourceBridgeParent(collider);
                 if (hitResource != null)
                 {
@@ -283,7 +275,6 @@ namespace Game.Bridge
                 {
                     Vector3 hitPoint = InteractionRay.GetCollisionPoint();
                     Vector2I gridCoord = hitGarden.WorldToGridCoordinates(hitPoint);
-
                     string actionToSend = "";
                     string cropIdToPlant = "";
 
@@ -293,9 +284,7 @@ namespace Game.Bridge
                     else if (toolCategory == "scythe") actionToSend = "Harvest";
 
                     if (!string.IsNullOrEmpty(actionToSend) && PlayerStatsManager.Instance.TryConsumeStamina(staminaCost))
-                    {
                         hitGarden.Interact(gridCoord, actionToSend, cropIdToPlant);
-                    }
                 }
             }
         }

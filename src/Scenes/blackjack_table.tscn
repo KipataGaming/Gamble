@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://dtg4wjh4pd1t0"]
+
+[ext_resource type="Script" uid="uid://bxu4pfoyamx6x" path="res://src/Core/BlackjackTable.cs" id="1_hkw08"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dduxh"]
+albedo_color = Color(0.70956916, 0.23507455, 0.26205933, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_hkw08"]
+material = SubResource("StandardMaterial3D_dduxh")
+size = Vector3(4, 0.3, 2)
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_v486v"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_13pm1"]
+size = Vector3(3.977417, 0.26608887, 2)
+
+[node name="BlackjackTable" type="Node3D" unique_id=1192721355]
+script = ExtResource("1_hkw08")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=998176840]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9594935, 0)
+mesh = SubResource("BoxMesh_hkw08")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=591671315]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.97405994, 0)
+physics_material_override = SubResource("PhysicsMaterial_v486v")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=171096093]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.011291504, -0.016955554, 0)
+shape = SubResource("BoxShape3D_13pm1")

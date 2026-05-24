@@ -6,7 +6,9 @@
 [ext_resource type="Script" uid="uid://mfp4kg81lnry" path="res://src/Bridge/SunBridge.cs" id="4_e4c6v"]
 [ext_resource type="Script" uid="uid://ct6p80qysbmbh" path="res://src/Bridge/StatsUIBridge.cs" id="5_w3s2q"]
 [ext_resource type="Script" uid="uid://3vny8lho6vxg" path="res://src/Bridge/InventoryUIBridge.cs" id="6_2kg1o"]
+[ext_resource type="PackedScene" uid="uid://fpagwytqq7tv" path="res://src/Scenes/BlackjackUI.tscn" id="6_6dq5p"]
 [ext_resource type="PackedScene" uid="uid://br65ovqjab54d" path="res://src/Scenes/hud.tscn" id="7_6dq5p"]
+[ext_resource type="PackedScene" uid="uid://dtg4wjh4pd1t0" path="res://src/Scenes/blackjack_table.tscn" id="7_7u8tw"]
 [ext_resource type="PackedScene" uid="uid://cyow16xipl8j4" path="res://src/Scenes/EscapeMenu.tscn" id="8_7u8tw"]
 [ext_resource type="Script" uid="uid://dpi6ksk1tmih" path="res://src/Bridge/FarmGridBridge.cs" id="9_iaes7"]
 [ext_resource type="PackedScene" uid="uid://h4jsfomtuihv" path="res://src/Bridge/AI/enemy.tscn" id="10_n0f2q"]
@@ -263,3 +265,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.544075, 0.85748017, -1.00
 
 [node name="TV" parent="." unique_id=1425286963 instance=ExtResource("14_e4c6v")]
 transform = Transform3D(0.20090699, 0, 0.9796103, 0, 1, 0, -0.9796103, 0, 0.20090699, -4.1957726, 2.190889, -0.27390063)
+
+[node name="BlackjackTable" parent="." unique_id=1192721355 instance=ExtResource("7_7u8tw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2978277, 0.5, -4.5413666)
+BlackjackUI = ExtResource("6_6dq5p")
+
+[node name="BlackjackUI" parent="." unique_id=112758883 instance=ExtResource("6_6dq5p")]
+visible = false
