@@ -160,7 +160,13 @@ namespace Game.Bridge
                 _farmingCore.InteractWithPlot(coordinate, actionType, cropId);
             }
         }
-
+    public void SimulateDayPassing()
+{
+    if (_farmingCore != null)
+    {
+        _farmingCore.SimulateDayPassing();
+    }
+}
         public Vector2I WorldToGridCoordinates(Vector3 worldPosition)
         {
             int x = Mathf.RoundToInt(worldPosition.X / TileSpacing);

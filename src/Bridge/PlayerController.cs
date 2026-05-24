@@ -27,12 +27,42 @@ namespace Game.Bridge
         private bool _isDead = false;
         private Vector3 _spawnPosition;
 
-        public override void _Ready()
+            public override void _Ready()
+    {
+        Input.MouseMode = Input.MouseModeEnum.Captured;
+        _spawnPosition = GlobalPosition;
+
+        // === Auto load tools from WeaponNode ===
+        Equipment.Clear();
+
+        // Try to find the WeaponNode container
+        var weaponContainer = GetNodeOrNull<Node>("Node3D/WeaponNode");
+
+        if (weaponContainer == null)
         {
-            Input.MouseMode = Input.MouseModeEnum.Captured;
-            _spawnPosition = GlobalPosition;
+            // Fallback: search recursively
+            weaponContainer = FindChild("WeaponNode", true, false) as Node;
         }
 
+        if (weaponContainer != null)
+        {
+            foreach (Node child in weaponContainer.GetChildren())
+            {
+                if (child is WeaponBridge weapon)
+                {
+                    Equipment.Add(weapon);
+                    weapon.Visible = false; // hide all by default
+                }
+            }
+
+            GD.Print($"[Player] Loaded {Equipment.Count} tools into Equipment array");
+        }
+        else
+        {
+            GD.PrintErr("[Player] Could not find WeaponNode!");
+        }
+    }
+   
         public override void _Process(double delta)
         {
             if (GetTree().Paused || _isDead) return;
@@ -125,28 +155,40 @@ namespace Game.Bridge
             }
 
             if (@event is InputEventKey keyEvent2 && keyEvent2.Pressed && !keyEvent2.Echo)
-            {
-                if (keyEvent2.Keycode == Key.Key1) EquipTool(0);
-                if (keyEvent2.Keycode == Key.Key2) EquipTool(1);
-                if (keyEvent2.Keycode == Key.Key3) EquipTool(2);
-                if (keyEvent2.Keycode == Key.Key4) EquipTool(3);
-                if (keyEvent2.Keycode == Key.Key5) EquipTool(4);
-                if (keyEvent2.Keycode == Key.Key6) EquipTool(5);
-                if (keyEvent2.Keycode == Key.Key7) EquipTool(6);
+{
+    // Tool / Weapon keys (your requested layout)
+    if (keyEvent2.Keycode == Key.Key1) { GD.Print("Pressed 1"); EquipTool(0); }
+    if (keyEvent2.Keycode == Key.Key2) { GD.Print("Pressed 2"); EquipTool(1); }
+    if (keyEvent2.Keycode == Key.Key3) { GD.Print("Pressed 3"); EquipTool(2); }
+    if (keyEvent2.Keycode == Key.Key4) { GD.Print("Pressed 4"); EquipTool(3); }
+    if (keyEvent2.Keycode == Key.Key5) { GD.Print("Pressed 5"); EquipTool(4); }
+    if (keyEvent2.Keycode == Key.Key6) { GD.Print("Pressed 6"); EquipTool(5); }
+    if (keyEvent2.Keycode == Key.Key7) { GD.Print("Pressed 7"); EquipTool(6); }
 
-                if (keyEvent2.Keycode == Key.M)
-                {
-                    bool sold = MarketManager.Instance.SellItem("wood", 1);
-                    GD.Print(sold ? "[TEST] Sold 1 wood!" : "[TEST] Could not sell wood");
-                }
+    // Pass time
+    if (keyEvent2.Keycode == Key.T)
+    {
+        var farm = GetTree().Root.GetNodeOrNull<FarmGridBridge>("/root/FarmGridBridge");
+        if (farm != null && farm.HasMethod("SimulateDayPassing"))
+        {
+            farm.Call("SimulateDayPassing");
+        }
+    }
 
-                if (keyEvent2.Keycode == Key.B)
-                {
-                    var market = GetTree().Root.GetNodeOrNull<MarketUI>("/root/MarketUI");
-                    if (market != null)
-                        market.Visible = !market.Visible;
-                }
-            }
+    // Debug keys
+    if (keyEvent2.Keycode == Key.M)
+    {
+        bool sold = MarketManager.Instance.SellItem("wood", 1);
+        GD.Print(sold ? "[TEST] Sold 1 wood!" : "[TEST] Could not sell wood");
+    }
+
+    if (keyEvent2.Keycode == Key.B)
+    {
+        var market = GetTree().Root.GetNodeOrNull<MarketUI>("/root/MarketUI");
+        if (market != null)
+            market.Visible = !market.Visible;
+    }
+}
         }
 
         public override void _PhysicsProcess(double delta)
@@ -206,17 +248,33 @@ namespace Game.Bridge
         }
 
         private void EquipTool(int slotIndex)
-        {
-            if (slotIndex < 0 || slotIndex >= Equipment.Count) return;
-            WeaponBridge selectedTool = Equipment[slotIndex];
-            if (selectedTool == null) return;
+{
+    if (slotIndex < 0 || slotIndex >= Equipment.Count)
+    {
+        GD.PrintErr($"[Player] Tried to equip invalid slot {slotIndex}");
+        return;
+    }
 
-            foreach (var tool in Equipment)
-                if (tool != null) tool.Visible = false;
+    WeaponBridge selectedTool = Equipment[slotIndex];
+    if (selectedTool == null)
+    {
+        GD.PrintErr($"[Player] Slot {slotIndex} is empty!");
+        return;
+    }
 
-            CurrentWeapon = selectedTool;
-            CurrentWeapon.Visible = true;
-        }
+    // Hide all tools first
+    foreach (var tool in Equipment)
+    {
+        if (tool != null)
+            tool.Visible = false;
+    }
+
+    // Show the selected one
+    CurrentWeapon = selectedTool;
+    CurrentWeapon.Visible = true;
+
+    GD.Print($"[Player] Equipped Slot {slotIndex} → {CurrentWeapon.Name}");
+}
 
         private void HandlePickup()
         {

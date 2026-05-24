@@ -17,8 +17,8 @@
 script = ExtResource("1_0gx41")
 PlayerCamera = NodePath("Node3D/Camera3D")
 InteractionRay = NodePath("Node3D/Camera3D/InteractRayCast")
-CurrentWeapon = NodePath("Node3D/Camera3D/AxeNode")
-Equipment = [NodePath("Node3D/Camera3D/WeaponNode"), NodePath("Node3D/Camera3D/ShovelNode"), NodePath("Node3D/Camera3D/WateringCanNode"), NodePath("Node3D/Camera3D/SeedNode"), NodePath("Node3D/Camera3D/ScytheNode"), NodePath("Node3D/Camera3D/AxeNode"), NodePath("Node3D/Camera3D/PickaxeNode")]
+CurrentWeapon = NodePath("WeaponNode/AxeNode")
+Equipment = [NodePath("WeaponNode"), NodePath("WeaponNode/ShovelNode"), NodePath("WeaponNode/WateringCanNode"), NodePath("WeaponNode/SeedNode"), NodePath("WeaponNode/ScytheNode"), NodePath("WeaponNode/AxeNode"), NodePath("WeaponNode/PickaxeNode")]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=866314326]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
@@ -49,35 +49,44 @@ target_position = Vector3(0, 0, -50)
 debug_shape_custom_color = Color(0.007843138, 0, 0, 1)
 debug_shape_thickness = 5
 
-[node name="WeaponNode" type="Node3D" parent="Node3D/Camera3D" unique_id=576866709 node_paths=PackedStringArray("AimRay")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5940175, 0)
+[node name="WeaponNode" type="Node3D" parent="." unique_id=576866709 node_paths=PackedStringArray("AimRay")]
 script = ExtResource("2_0kad6")
-AimRay = NodePath("../AimRay")
+AimRay = NodePath("../Node3D/Camera3D/AimRay")
 Damage = 10
 
-[node name="ShovelNode" type="Node3D" parent="Node3D/Camera3D" unique_id=792601094]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5940175, 0)
+[node name="WeaponNode" type="Node3D" parent="WeaponNode" unique_id=752226767 node_paths=PackedStringArray("AimRay")]
+script = ExtResource("2_0kad6")
+AimRay = NodePath("../../Node3D/Camera3D/AimRay")
+
+[node name="ShovelNode" type="Node3D" parent="WeaponNode" unique_id=792601094 node_paths=PackedStringArray("AimRay")]
 script = ExtResource("2_0kad6")
 ToolCategory = "Shovel"
+AimRay = NodePath("../../Node3D/Camera3D/AimRay")
 
-[node name="WateringCanNode" type="Node3D" parent="Node3D/Camera3D" unique_id=658620289]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5940175, 0)
+[node name="WateringCanNode" type="Node3D" parent="WeaponNode" unique_id=658620289 node_paths=PackedStringArray("AimRay")]
 script = ExtResource("2_0kad6")
 ToolCategory = "WateringCan"
+AimRay = NodePath("../../Node3D/Camera3D/AimRay")
 
-[node name="SeedNode" type="Node3D" parent="Node3D/Camera3D" unique_id=252711234]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5940175, 0)
+[node name="SeedNode" type="Node3D" parent="WeaponNode" unique_id=252711234 node_paths=PackedStringArray("AimRay")]
 script = ExtResource("2_0kad6")
 ToolCategory = "Seed"
+AimRay = NodePath("../../Node3D/Camera3D/AimRay")
 
-[node name="ScytheNode" type="Node3D" parent="Node3D/Camera3D" unique_id=2040879951]
+[node name="ScytheNode" type="Node3D" parent="WeaponNode" unique_id=2040879951 node_paths=PackedStringArray("AimRay")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5940175, 0)
 script = ExtResource("2_0kad6")
 ToolCategory = "Scythe"
+AimRay = NodePath("../../Node3D/Camera3D/AimRay")
 
-[node name="AxeNode" type="Node3D" parent="Node3D/Camera3D" unique_id=631668239]
+[node name="AxeNode" type="Node3D" parent="WeaponNode" unique_id=631668239 node_paths=PackedStringArray("AimRay")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5940175, 0)
 script = ExtResource("2_0kad6")
 ToolCategory = "Axe"
+AimRay = NodePath("../../Node3D/Camera3D/AimRay")
 
-[node name="PickaxeNode" type="Node3D" parent="Node3D/Camera3D" unique_id=161968851]
+[node name="PickaxeNode" type="Node3D" parent="WeaponNode" unique_id=161968851 node_paths=PackedStringArray("AimRay")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5940175, 0)
 script = ExtResource("2_0kad6")
 ToolCategory = "Pickaxe"
+AimRay = NodePath("../../Node3D/Camera3D/AimRay")
