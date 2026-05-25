@@ -1,0 +1,79 @@
+[gd_scene format=3 uid="uid://dce543v1eaapt"]
+
+[ext_resource type="Script" uid="uid://bbpwlu3j5yltu" path="res://src/Bridge/VehicleController.cs" id="1_yrrrh"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cw0yx"]
+albedo_color = Color(0.8924441, 0, 0.18830726, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_yrrrh"]
+material = SubResource("StandardMaterial3D_cw0yx")
+size = Vector3(2, 1.7, 4)
+subdivide_width = 26
+subdivide_height = 26
+subdivide_depth = 26
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ixqlg"]
+size = Vector3(2, 1.7, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ws2e3"]
+size = Vector3(3, 1.8, 5)
+
+[sub_resource type="Environment" id="Environment_yrrrh"]
+
+[sub_resource type="CameraAttributesPhysical" id="CameraAttributesPhysical_ixqlg"]
+
+[sub_resource type="Compositor" id="Compositor_ws2e3"]
+
+[node name="Car" type="VehicleBody3D" unique_id=620848642 node_paths=PackedStringArray("VehicleCamera")]
+mass = 1500.0
+script = ExtResource("1_yrrrh")
+EnginePower = 5000.0
+SteeringPower = 100.0
+VehicleCamera = NodePath("VehicleCamera")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1318895577]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.26452994, 0)
+mesh = SubResource("BoxMesh_yrrrh")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=188705856]
+shape = SubResource("BoxShape3D_ixqlg")
+
+[node name="FrontLeft" type="VehicleWheel3D" parent="." unique_id=584755610]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8914747, -0.81414384, 1.3568851)
+use_as_traction = true
+use_as_steering = true
+wheel_radius = 1.09
+wheel_rest_length = 0.535
+suspension_travel = 0.127
+damping_compression = 0.5
+
+[node name="FrontRight" type="VehicleWheel3D" parent="." unique_id=1364688049]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7784688, -0.81414384, 1.357)
+use_as_traction = true
+use_as_steering = true
+wheel_radius = 1.09
+wheel_rest_length = 0.535
+
+[node name="RearLeft" type="VehicleWheel3D" parent="." unique_id=1812651831]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9972107, -0.81414384, -2.7189918)
+use_as_traction = true
+use_as_steering = true
+wheel_radius = 1.025
+
+[node name="RearRight" type="VehicleWheel3D" parent="." unique_id=2129950587]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7582042, -0.81414384, -2.6170752)
+use_as_traction = true
+wheel_radius = 1.025
+suspension_travel = 0.127
+damping_compression = 0.5
+
+[node name="InteractionArea" type="Area3D" parent="." unique_id=227361256]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractionArea" unique_id=1568775163]
+shape = SubResource("BoxShape3D_ws2e3")
+
+[node name="VehicleCamera" type="Camera3D" parent="." unique_id=1942619116]
+transform = Transform3D(-0.99994165, 0, -0.0108034015, 0, 1, 0, 0.0108034015, 0, -0.99994165, 0.07883501, 0.96307874, 0.38816065)
+environment = SubResource("Environment_yrrrh")
+attributes = SubResource("CameraAttributesPhysical_ixqlg")
+compositor = SubResource("Compositor_ws2e3")

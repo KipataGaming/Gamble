@@ -21,6 +21,8 @@ namespace Game.Bridge
 
         [Export] public Label InteractionPrompt;
 
+        private VehicleController _currentVehicle;
+        private bool _isInVehicle = false;
         private TV _currentTV;
         private Node _currentInteractable;
 
@@ -32,7 +34,6 @@ namespace Game.Bridge
             Input.MouseMode = Input.MouseModeEnum.Captured;
             _spawnPosition = GlobalPosition;
 
-            // Auto load tools
             Equipment.Clear();
             var weaponContainer = GetNodeOrNull<Node>("Node3D/WeaponNode");
             if (weaponContainer == null)
@@ -56,6 +57,34 @@ namespace Game.Bridge
         {
             if (GetTree().Paused || _isDead) return;
 
+            if (_isInVehicle)
+            {
+                if (InteractionPrompt != null)
+                    InteractionPrompt.Visible = false;
+
+                if (Input.IsActionJustPressed("interact"))
+                {
+                    if (_currentVehicle != null)
+                    {
+                        Vector3 exitPos = _currentVehicle.GlobalPosition 
+                                          + _currentVehicle.GlobalTransform.Basis.X * 2.8f 
+                                          + Vector3.Up * 1.2f;
+                        _currentVehicle.ExitVehicle(exitPos);
+                    }
+
+                    _isInVehicle = false;
+                    Visible = true;
+                    SetPhysicsProcess(true);
+
+                    if (PlayerCamera != null)
+                        PlayerCamera.Current = true;
+
+                    _currentVehicle = null;
+                    GD.Print("[Player] Exited vehicle");
+                }
+                return;
+            }
+
             InteractionRay.ForceRaycastUpdate();
 
             string promptText = "";
@@ -64,8 +93,8 @@ namespace Game.Bridge
             if (InteractionRay.IsColliding())
             {
                 Node collider = InteractionRay.GetCollider() as Node;
-
                 Node current = collider;
+
                 while (current != null)
                 {
                     if (current is TV tv)
@@ -83,11 +112,17 @@ namespace Game.Bridge
                         break;
                     }
 
-                    // === CCTV Monitor Detection ===
                     if (current is CCTVMonitor monitor)
                     {
                         _currentInteractable = monitor;
                         promptText = "Press F to use CCTV";
+                        break;
+                    }
+
+                    if (current is VehicleController vehicle)
+                    {
+                        _currentVehicle = vehicle;
+                        promptText = "Press F to enter vehicle";
                         break;
                     }
 
@@ -97,22 +132,28 @@ namespace Game.Bridge
 
             if (InteractionPrompt != null)
             {
-                if (!string.IsNullOrEmpty(promptText))
-                {
-                    InteractionPrompt.Text = promptText;
-                    InteractionPrompt.Visible = true;
-                }
-                else
-                {
-                    InteractionPrompt.Visible = false;
-                }
+                InteractionPrompt.Text = promptText;
+                InteractionPrompt.Visible = !string.IsNullOrEmpty(promptText);
             }
 
             if (Input.IsActionJustPressed("interact"))
             {
-                if (_currentInteractable != null && _currentInteractable.HasMethod("OnPlayerInteract"))
+                if (_isInVehicle && _currentVehicle != null)
+                {
+                    // Already handled above
+                }
+                else if (_currentInteractable != null && _currentInteractable.HasMethod("OnPlayerInteract"))
                 {
                     _currentInteractable.Call("OnPlayerInteract");
+                }
+                else if (_currentVehicle != null)
+                {
+                    _currentVehicle.EnterVehicle(this);
+                    _isInVehicle = true;
+                    Visible = false;
+                    SetPhysicsProcess(false);
+                    if (InteractionPrompt != null) InteractionPrompt.Visible = false;
+                    GD.Print("[Player] Entered vehicle");
                 }
                 else
                 {
@@ -136,7 +177,6 @@ namespace Game.Bridge
 
             if (_isDead) return;
 
-            // Camera lock when Blackjack UI is open
             if (@event is InputEventMouseMotion mouseMotion && PlayerCamera != null)
             {
                 var blackjackUI = GetTree().Root.GetNodeOrNull<BlackjackUI>("/root/BlackjackUI");
@@ -153,14 +193,14 @@ namespace Game.Bridge
 
             if (@event is InputEventKey keyEvent2 && keyEvent2.Pressed && !keyEvent2.Echo)
             {
-                if (keyEvent2.Keycode == Key.Key1) { GD.Print("Pressed 1"); EquipTool(0); }
-                if (keyEvent2.Keycode == Key.Key2) { GD.Print("Pressed 2"); EquipTool(1); }
-                if (keyEvent2.Keycode == Key.Key3) { GD.Print("Pressed 3"); EquipTool(2); }
-                if (keyEvent2.Keycode == Key.Key4) { GD.Print("Pressed 4"); EquipTool(3); }
-                if (keyEvent2.Keycode == Key.Key5) { GD.Print("Pressed 5"); EquipTool(4); }
-                if (keyEvent2.Keycode == Key.Key6) { GD.Print("Pressed 6"); EquipTool(5); }
-                if (keyEvent2.Keycode == Key.Key7) { GD.Print("Pressed 7"); EquipTool(6); }
-                if (keyEvent2.Keycode == Key.Key8) { GD.Print("Pressed 8"); EquipTool(7); }
+                if (keyEvent2.Keycode == Key.Key1) EquipTool(0);
+                if (keyEvent2.Keycode == Key.Key2) EquipTool(1);
+                if (keyEvent2.Keycode == Key.Key3) EquipTool(2);
+                if (keyEvent2.Keycode == Key.Key4) EquipTool(3);
+                if (keyEvent2.Keycode == Key.Key5) EquipTool(4);
+                if (keyEvent2.Keycode == Key.Key6) EquipTool(5);
+                if (keyEvent2.Keycode == Key.Key7) EquipTool(6);
+                if (keyEvent2.Keycode == Key.Key8) EquipTool(7);
 
                 if (keyEvent2.Keycode == Key.T)
                 {
@@ -241,11 +281,7 @@ namespace Game.Bridge
 
         private bool _isInWater = false;
 
-        public void SetInWater(bool value)
-        {
-            _isInWater = value;
-        }
-
+        public void SetInWater(bool value) { _isInWater = value; }
         public bool IsInWater() => _isInWater;
 
         public void TakeDamage(int amount)
@@ -253,8 +289,7 @@ namespace Game.Bridge
             if (_isDead || PlayerStatsManager.Instance.CurrentHealth <= 0) return;
             GD.Print($"[Player] -> HIT! Took {amount} damage.");
             PlayerStatsManager.Instance.DecreaseHealth(amount);
-            if (PlayerStatsManager.Instance.CurrentHealth <= 0)
-                Die();
+            if (PlayerStatsManager.Instance.CurrentHealth <= 0) Die();
         }
 
         private void Die()
@@ -276,25 +311,15 @@ namespace Game.Bridge
 
         private void EquipTool(int slotIndex)
         {
-            if (slotIndex < 0 || slotIndex >= Equipment.Count)
-            {
-                GD.PrintErr($"[Player] Tried to equip invalid slot {slotIndex}");
-                return;
-            }
-
+            if (slotIndex < 0 || slotIndex >= Equipment.Count) return;
             WeaponBridge selectedTool = Equipment[slotIndex];
-            if (selectedTool == null)
-            {
-                GD.PrintErr($"[Player] Slot {slotIndex} is empty!");
-                return;
-            }
+            if (selectedTool == null) return;
 
             foreach (var tool in Equipment)
                 if (tool != null) tool.Visible = false;
 
             CurrentWeapon = selectedTool;
             CurrentWeapon.Visible = true;
-            GD.Print($"[Player] Equipped Slot {slotIndex} → {CurrentWeapon.Name}");
         }
 
         private void HandlePickup()
@@ -323,10 +348,8 @@ namespace Game.Bridge
 
             if (toolCategory == "fishingrod" || toolCategory == "fishing")
             {
-                if (IsInWater())
-                    StartFishing();
-                else
-                    GD.Print("[Fishing] You need to be in water to fish.");
+                if (IsInWater()) StartFishing();
+                else GD.Print("[Fishing] You need to be in water to fish.");
                 return;
             }
 
@@ -393,6 +416,11 @@ namespace Game.Bridge
             {
                 GD.Print("[Fishing] The fish got away...");
             }
+        }
+
+        private void HandleVehicleInteraction()
+        {
+            // Not used in main flow
         }
 
         private FarmGridBridge FindFarmBridgeParent(Node node)

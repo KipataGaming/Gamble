@@ -19,6 +19,7 @@
 [ext_resource type="PackedScene" uid="uid://bqisxtqchk05y" path="res://src/Scenes/water_area.tscn" id="17_6dq5p"]
 [ext_resource type="PackedScene" uid="uid://bw0vtnwtcwexy" path="res://src/Scenes/cctv_monitor.tscn" id="18_iaes7"]
 [ext_resource type="PackedScene" uid="uid://b87l7gabsals5" path="res://src/Scenes/security_camera.tscn" id="19_n0f2q"]
+[ext_resource type="PackedScene" uid="uid://dce543v1eaapt" path="res://src/Scenes/car.tscn" id="20_n0f2q"]
 
 [sub_resource type="Gradient" id="Gradient_0vhqb"]
 offsets = PackedFloat32Array(0.2542373, 1)
@@ -286,9 +287,14 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.595405, 3.5080156, 38.6465
 [node name="SecurityCamera" parent="." unique_id=1042296392 instance=ExtResource("19_n0f2q")]
 transform = Transform3D(0.3354515, 0, 0.9420575, 0, 1, 0, -0.9420575, 0, 0.3354515, 0.063372135, 3.1897326, -4.6801777)
 
-[node name="CCTVMonitor" parent="." unique_id=1434738607 node_paths=PackedStringArray("Cameras") instance=ExtResource("18_iaes7")]
-transform = Transform3D(0.26977706, 0, 0.9629228, 0, 1, 0, -0.9629228, 0, 0.26977706, -5.0718193, 1.25, -2.057477)
-Cameras = [NodePath("../SecurityCamera"), NodePath("../SecurityCamera2")]
+[node name="SecurityCamera3" parent="." unique_id=1345695349 instance=ExtResource("19_n0f2q")]
+transform = Transform3D(0.65125114, 0, -0.75886226, 0, 1, 0, 0.75886226, 0, 0.65125114, -1.6143775, 3.1897326, -4.6801777)
 
-[node name="SecurityCamera2" parent="." unique_id=1091718741 instance=ExtResource("19_n0f2q")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7473664, 3.2988129, -12.259567)
+[node name="SecurityCamera2" parent="." unique_id=925215470 instance=ExtResource("19_n0f2q")]
+transform = Transform3D(0.3354515, 0, 0.9420575, 0, 1, 0, -0.9420575, 0, 0.3354515, -3.7244022, 3.1897326, 6.4705954)
+
+[node name="CCTVMonitor" parent="." unique_id=1434738607 instance=ExtResource("18_iaes7")]
+transform = Transform3D(0.26977706, 0, 0.9629228, 0, 1, 0, -0.9629228, 0, 0.26977706, -5.0718193, 1.25, -2.057477)
+
+[node name="Car" parent="." unique_id=620848642 instance=ExtResource("20_n0f2q")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.595703, 1.35, -8.734964)
