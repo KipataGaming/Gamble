@@ -28,6 +28,10 @@ PlayerStatsManager="*uid://bmsoljp13br3p"
 
 project/assembly_name="Game"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/sky_3d/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
+
 [global_group]
 
 Player=""

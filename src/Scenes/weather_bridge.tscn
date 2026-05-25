@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://gi1klxs8mglq"]
+
+[ext_resource type="Script" uid="uid://bhkcjuhc0issn" path="res://src/Bridge/WeatherBridge.cs" id="1_77gij"]
+
+[node name="WeatherBridge" type="CanvasLayer" unique_id=814472110 node_paths=PackedStringArray("TemperatureLabel", "TimeLabel", "LocationDropdown")]
+offset = Vector2(-5.0718193, 1.6516788)
+rotation = 3.1415927
+scale = Vector2(0.06667813, -1.5215628)
+transform = Transform2D(-0.06667813, 0, 0, 1.5215628, -5.0718193, 1.6516788)
+script = ExtResource("1_77gij")
+TemperatureLabel = NodePath("Temperature Label")
+TimeLabel = NodePath("Time Label")
+LocationDropdown = NodePath("")
+Sky3DPath = NodePath("../Sky3D")
+
+[node name="Temperature Label" type="Label" parent="." unique_id=490681662]
+offset_left = 359.0
+offset_top = 11.0
+offset_right = 399.0
+offset_bottom = 34.0
+
+[node name="Time Label" type="Label" parent="." unique_id=1289290825]
+offset_left = 359.0
+offset_top = 11.0
+offset_right = 399.0
+offset_bottom = 34.0

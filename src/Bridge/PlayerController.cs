@@ -66,10 +66,18 @@ namespace Game.Bridge
                 {
                     if (_currentVehicle != null)
                     {
+                        // Improved exit position - behind and to the right
+                        Vector3 backDirection = -_currentVehicle.GlobalTransform.Basis.Z;
+                        Vector3 rightDirection = _currentVehicle.GlobalTransform.Basis.X;
+
                         Vector3 exitPos = _currentVehicle.GlobalPosition 
-                                          + _currentVehicle.GlobalTransform.Basis.X * 2.8f 
-                                          + Vector3.Up * 1.2f;
+                                          + backDirection * 2.5f 
+                                          + rightDirection * 1.5f 
+                                          + Vector3.Up * 1.0f;
+
                         _currentVehicle.ExitVehicle(exitPos);
+                        GlobalPosition = exitPos;   // ← Move player to exit position
+
                     }
 
                     _isInVehicle = false;
@@ -138,15 +146,7 @@ namespace Game.Bridge
 
             if (Input.IsActionJustPressed("interact"))
             {
-                if (_isInVehicle && _currentVehicle != null)
-                {
-                    // Already handled above
-                }
-                else if (_currentInteractable != null && _currentInteractable.HasMethod("OnPlayerInteract"))
-                {
-                    _currentInteractable.Call("OnPlayerInteract");
-                }
-                else if (_currentVehicle != null)
+                if (_currentVehicle != null)
                 {
                     _currentVehicle.EnterVehicle(this);
                     _isInVehicle = true;
@@ -154,6 +154,10 @@ namespace Game.Bridge
                     SetPhysicsProcess(false);
                     if (InteractionPrompt != null) InteractionPrompt.Visible = false;
                     GD.Print("[Player] Entered vehicle");
+                }
+                else if (_currentInteractable != null && _currentInteractable.HasMethod("OnPlayerInteract"))
+                {
+                    _currentInteractable.Call("OnPlayerInteract");
                 }
                 else
                 {

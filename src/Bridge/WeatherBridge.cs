@@ -1,62 +1,87 @@
 using Godot;
-using Game.Core;
-using Game.Core.Models;
+using System;
 using System.Collections.Generic;
 
 namespace Game.Bridge;
 
 public partial class WeatherBridge : CanvasLayer
 {
-	[Export] public Label TemperatureLabel = null!;
-	[Export] public Label TimeLabel = null!;
-	[Export] public OptionButton LocationDropdown = null!;
+	[Export] public Label TemperatureLabel;
+	[Export] public Label TimeLabel;
+	[Export] public OptionButton LocationDropdown;
+	[Export] public NodePath Sky3DPath;
+
+	private Node _sky;
+
+	private readonly Dictionary<string, (string Name, double Lat, double Lon)> _locations = new()
+	{
+		{ "congo",      ("Congo Jungle",     0.0,   23.0) },
+		{ "newyork",    ("New York",        40.7,  -74.0) },
+		{ "tokyo",      ("Tokyo",           35.7,  139.7) },
+		{ "grandforks", ("Grand Forks",     47.9,  -97.0) },
+		{ "sydney",     ("Sydney",         -33.9, 151.2) }
+	};
 
 	public override void _Ready()
 	{
-		// 1. Subscribe to the signal immediately (this is safe)
-		WeatherManager.Instance.WeatherUpdated += OnStateUpdated;
-		
-		// 2. Use CallDeferred to ensure the Singleton is fully ready before execution
-		Callable.From(InitializeLocationDropdown).CallDeferred();
+		if (Sky3DPath != null)
+			_sky = GetNode(Sky3DPath);
+
+		InitializeLocationDropdown();
+		UpdateTimeDisplay();
 	}
 
 	private void InitializeLocationDropdown()
 	{
-		// Safety: If the manager still isn't there, exit
-		if (WeatherManager.Instance == null) return;
 		if (LocationDropdown == null) return;
-		
+
 		LocationDropdown.Clear();
-		
-		// Populate from the Singleton
-		foreach (var loc in WeatherManager.Instance.Locations)
+
+		foreach (var kvp in _locations)
 		{
-			LocationDropdown.AddItem(loc.Value["name"]);
-			LocationDropdown.SetItemMetadata(LocationDropdown.ItemCount - 1, loc.Key);
+			LocationDropdown.AddItem(kvp.Value.Name);
+			LocationDropdown.SetItemMetadata(LocationDropdown.ItemCount - 1, kvp.Key);
 		}
-		
-		// Ensure signal is connected only once
-		if (!LocationDropdown.IsConnected(OptionButton.SignalName.ItemSelected, Callable.From<long>(OnLocationSelected)))
+
+		LocationDropdown.ItemSelected += OnLocationSelected;
+
+		if (LocationDropdown.ItemCount > 0)
 		{
-			LocationDropdown.ItemSelected += OnLocationSelected;
+			LocationDropdown.Selected = 0;
+			SetSkyLocation("congo");
 		}
 	}
 
 	private void OnLocationSelected(long index)
 	{
-		if (WeatherManager.Instance == null) return;
-		string selectedKey = (string)LocationDropdown.GetItemMetadata((int)index);
-		WeatherManager.Instance.ChangeLocation(selectedKey);
+		string key = (string)LocationDropdown.GetItemMetadata((int)index);
+		SetSkyLocation(key);
 	}
 
-	private void OnStateUpdated(WeatherData weather, float bodyTemp, float wetness, float gameTime)
+	private void SetSkyLocation(string key)
 	{
-		if (TemperatureLabel != null) 
-			TemperatureLabel.Text = $"[{weather.CityName}] {weather.Temperature:F1}°F";
-			
-		int hours = (int)gameTime;
-		int minutes = (int)((gameTime - hours) * 60);
-		if (TimeLabel != null)
-			TimeLabel.Text = $"{hours:00}:{minutes:00}";
+		if (_sky == null || !_locations.ContainsKey(key)) return;
+
+		var loc = _locations[key];
+
+		_sky.Set("latitude", loc.Lat);
+		_sky.Set("longitude", loc.Lon);
+		_sky.Set("datetime", Time.GetDatetimeDictFromSystem());
+
+		if (TemperatureLabel != null)
+			TemperatureLabel.Text = $"[{loc.Name}] Real-time Sky";
+	}
+
+	private void UpdateTimeDisplay()
+	{
+		if (TimeLabel == null) return;
+
+		var now = DateTime.Now;
+		TimeLabel.Text = $"{now.Hour:00}:{now.Minute:00}";
+	}
+
+	public override void _Process(double delta)
+	{
+		UpdateTimeDisplay();
 	}
 }

@@ -1,0 +1,140 @@
+[gd_scene format=3 uid="uid://ck2xtkraky6jp"]
+
+[ext_resource type="Script" uid="uid://ct6p80qysbmbh" path="res://src/Bridge/StatsUIBridge.cs" id="1_ia1fm"]
+[ext_resource type="PackedScene" uid="uid://gi1klxs8mglq" path="res://src/Scenes/weather_bridge.tscn" id="2_e1bit"]
+[ext_resource type="PackedScene" uid="uid://dupnaaqrhh0l6" path="res://src/Scenes/market_ui.tscn" id="3_xr38o"]
+[ext_resource type="Script" uid="uid://3vny8lho6vxg" path="res://src/Bridge/InventoryUIBridge.cs" id="4_yjx63"]
+[ext_resource type="PackedScene" uid="uid://fpagwytqq7tv" path="res://src/Scenes/BlackjackUI.tscn" id="5_3otxj"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_4xyjv"]
+
+[node name="MainUI" type="CanvasLayer" unique_id=890210926]
+
+[node name="UI" type="Control" parent="." unique_id=880153717 node_paths=PackedStringArray("HealthBar", "StaminaBar", "HealthLabel", "StaminaLabel")]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 359.0
+offset_top = 11.0
+offset_right = 1024.0
+offset_bottom = 155.0
+script = ExtResource("1_ia1fm")
+HealthBar = NodePath("HeatlhBar")
+StaminaBar = NodePath("StaminaBar")
+HealthLabel = NodePath("HealthLabel")
+StaminaLabel = NodePath("StaminaLabel")
+
+[node name="HeatlhBar" type="ProgressBar" parent="UI" unique_id=558234302]
+layout_mode = 0
+offset_right = 683.0
+offset_bottom = 27.0
+
+[node name="StaminaBar" type="ProgressBar" parent="UI" unique_id=2007529957]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 29.0
+offset_right = 683.0
+offset_bottom = 56.0
+
+[node name="HealthLabel" type="Label" parent="UI" unique_id=1591697558]
+layout_mode = 0
+offset_left = 66.0
+offset_top = 5.0
+offset_right = 118.0
+offset_bottom = 54.0
+text = "Health
+"
+
+[node name="StaminaLabel" type="Label" parent="UI" unique_id=1995979457]
+layout_mode = 0
+offset_left = 59.0
+offset_top = 30.0
+offset_right = 123.0
+offset_bottom = 53.0
+text = "Stamina"
+
+[node name="InteractionPrompt" type="Label" parent="UI" unique_id=1049383609]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.2
+anchor_top = 1.9650002
+anchor_right = 0.328
+anchor_bottom = 2.361
+offset_top = 0.039978027
+offset_right = 57.87999
+offset_bottom = -33.98401
+text = "Press F To Interact"
+horizontal_alignment = 1
+
+[node name="WeatherBridge" parent="UI" unique_id=814472110 node_paths=PackedStringArray("LocationDropdown") instance=ExtResource("2_e1bit")]
+LocationDropdown = NodePath("Dropdown")
+Sky3DPath = NodePath("../../Sky3D")
+
+[node name="Dropdown" type="OptionButton" parent="UI/WeatherBridge" unique_id=1730135570]
+anchors_preset = -1
+anchor_left = 0.90500003
+anchor_top = 0.43100002
+anchor_right = 1.0
+anchor_bottom = 0.569
+offset_left = -81.56006
+offset_top = -206.28802
+offset_right = -81.73511
+offset_bottom = -206.16003
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="MarketUI" parent="." unique_id=2105530063 instance=ExtResource("3_xr38o")]
+visible = false
+
+[node name="InventoryUI" type="Control" parent="." unique_id=516231743 node_paths=PackedStringArray("InventoryGrid")]
+visible = false
+layout_mode = 3
+anchor_left = 0.016
+anchor_top = 0.19900002
+anchor_right = 0.432
+anchor_bottom = 1.0
+offset_left = -0.4320011
+offset_top = 0.04798889
+offset_right = 0.33599854
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("4_yjx63")
+InventoryGrid = NodePath("InventoryGrid")
+
+[node name="BackgroundPanel" type="Panel" parent="InventoryUI" unique_id=316108719]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleLabel" type="Label" parent="InventoryUI" unique_id=896148231]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.45900002
+anchor_top = 0.053000003
+anchor_right = 0.73200005
+anchor_bottom = 0.13000001
+offset_left = 0.008987427
+offset_top = -0.011001587
+offset_right = 0.13195801
+offset_bottom = 0.18999481
+text = "INVENTORY"
+label_settings = SubResource("LabelSettings_4xyjv")
+horizontal_alignment = 1
+
+[node name="InventoryGrid" type="GridContainer" parent="InventoryUI" unique_id=311854577]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 4
+
+[node name="BlackjackUI" parent="." unique_id=112758883 instance=ExtResource("5_3otxj")]
+visible = false
