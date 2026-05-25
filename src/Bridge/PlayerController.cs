@@ -419,9 +419,44 @@ namespace Game.Bridge
         }
 
         private void HandleVehicleInteraction()
-        {
-            // Not used in main flow
-        }
+{
+    if (_currentVehicle == null) return;
+
+    if (!_isInVehicle)
+    {
+        _currentVehicle.EnterVehicle(this);
+        _isInVehicle = true;
+        Visible = false;
+        SetPhysicsProcess(false);
+        if (InteractionPrompt != null) InteractionPrompt.Visible = false;
+    }
+    else
+    {
+        VehicleController vehicle = _currentVehicle;
+
+        Vector3 rightDirection = vehicle.GlobalTransform.Basis.X;
+        Vector3 exitPos = vehicle.GlobalPosition + rightDirection * 3f + Vector3.Up * 1.5f;
+
+        vehicle.ExitVehicle(exitPos);
+
+        _isInVehicle = false;
+        Visible = true;
+
+        CallDeferred(nameof(SetExitPosition), exitPos);
+
+        if (PlayerCamera != null)
+            PlayerCamera.Current = true;
+
+        _currentVehicle = null;
+    }
+}
+
+private void SetExitPosition(Vector3 exitPos)
+{
+    GlobalPosition = exitPos;
+    Velocity = Vector3.Zero;
+    SetPhysicsProcess(true);
+}
 
         private FarmGridBridge FindFarmBridgeParent(Node node)
         {

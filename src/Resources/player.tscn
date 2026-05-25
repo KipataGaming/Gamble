@@ -18,7 +18,7 @@ script = ExtResource("1_0gx41")
 PlayerCamera = NodePath("Node3D/Camera3D")
 InteractionRay = NodePath("Node3D/Camera3D/InteractRayCast")
 CurrentWeapon = NodePath("WeaponNode/AxeNode")
-Equipment = [NodePath("WeaponNode"), NodePath("WeaponNode/ShovelNode"), NodePath("WeaponNode/WateringCanNode"), NodePath("WeaponNode/SeedNode"), NodePath("WeaponNode/ScytheNode"), NodePath("WeaponNode/AxeNode"), NodePath("WeaponNode/PickaxeNode"), NodePath("WeaponNode/FishingRodNode")]
+Equipment = [NodePath("WeaponNode/WeaponNode"), NodePath("WeaponNode/ShovelNode"), NodePath("WeaponNode/WateringCanNode"), NodePath("WeaponNode/SeedNode"), NodePath("WeaponNode/ScytheNode"), NodePath("WeaponNode/AxeNode"), NodePath("WeaponNode/PickaxeNode"), NodePath("WeaponNode/FishingRodNode")]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=866314326]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
