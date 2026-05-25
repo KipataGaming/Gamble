@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bw0vtnwtcwexy"]
 
-[ext_resource type="Script" uid="uid://codi4tgfryfl" path="res://src/Bridge/CCTVMonitor.cs" id="1_oqwg6"]
+[ext_resource type="Script" uid="uid://d3t46p8ds6x6h" path="res://src/Bridge/UI/CCTVMonitor.cs" id="1_oqwg6"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_oqwg6"]
 viewport_path = NodePath("MeshInstance3D/Screen")

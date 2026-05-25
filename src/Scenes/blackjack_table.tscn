@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://dtg4wjh4pd1t0"]
 
 [ext_resource type="Script" uid="uid://bxu4pfoyamx6x" path="res://src/Core/BlackjackTable.cs" id="1_hkw08"]
+[ext_resource type="PackedScene" uid="uid://fpagwytqq7tv" path="res://src/Scenes/BlackjackUI.tscn" id="2_v486v"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dduxh"]
 albedo_color = Color(0.70956916, 0.23507455, 0.26205933, 1)
@@ -16,6 +17,7 @@ size = Vector3(3.977417, 0.26608887, 2)
 
 [node name="BlackjackTable" type="Node3D" unique_id=1192721355]
 script = ExtResource("1_hkw08")
+BlackjackUI = ExtResource("2_v486v")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=998176840]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9594935, 0)

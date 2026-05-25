@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dce543v1eaapt"]
 
-[ext_resource type="Script" uid="uid://bbpwlu3j5yltu" path="res://src/Bridge/VehicleController.cs" id="1_yrrrh"]
+[ext_resource type="Script" uid="uid://kayd2f40sxhv" path="res://src/VehicleController.cs" id="1_yrrrh"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cw0yx"]
 albedo_color = Color(0.8924441, 0, 0.18830726, 1)
@@ -27,8 +27,6 @@ size = Vector3(3, 1.8, 5)
 [node name="Car" type="VehicleBody3D" unique_id=620848642 node_paths=PackedStringArray("VehicleCamera")]
 mass = 1500.0
 script = ExtResource("1_yrrrh")
-EnginePower = 5000.0
-SteeringPower = 100.0
 VehicleCamera = NodePath("VehicleCamera")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1318895577]
