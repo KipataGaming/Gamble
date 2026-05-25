@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://h4jsfomtuihv"]
 
-[ext_resource type="Script" uid="uid://dek5d1rjhebar" path="res://src/Core/EnemyController.cs" id="1_vi3wq"]
+[ext_resource type="Script" uid="uid://cgemioib4mj7j" path="res://src/Bridge/Enemies/EnemyController.cs" id="1_4dsqe"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_vi3wq"]
 
@@ -12,12 +12,9 @@ albedo_color = Color(1, 0.09019608, 0, 1)
 [sub_resource type="SphereShape3D" id="SphereShape3D_vi3wq"]
 radius = 3.0
 
-[node name="Enemy" type="CharacterBody3D" unique_id=1437758100 node_paths=PackedStringArray("NavAgent", "DetectionZone", "VisionRay")]
+[node name="Enemy" type="CharacterBody3D" unique_id=1437758100]
 up_direction = Vector3(0, -1, 0)
-script = ExtResource("1_vi3wq")
-NavAgent = NodePath("NavigationAgent3D")
-DetectionZone = NodePath("DetectionZone")
-VisionRay = NodePath("VisionRay")
+script = ExtResource("1_4dsqe")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=166672258]
 mesh = SubResource("CapsuleMesh_vi3wq")

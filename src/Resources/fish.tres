@@ -1,9 +1,0 @@
-[gd_resource type="Resource" format=3 uid="uid://c7gv7w8u78ae8"]
-
-[ext_resource type="Script" uid="uid://blfn5etyjf6rw" path="res://src/Resources/ItemResource.cs" id="1_t25pu"]
-
-[resource]
-script = ExtResource("1_t25pu")
-Id = "fish"
-Name = "Fish"
-Rarity = 6

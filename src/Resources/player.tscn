@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://2jp1r6x26g3i"]
 
-[ext_resource type="Script" uid="uid://n5naj7u3y8ji" path="res://src/Bridge/PlayerController.cs" id="1_0gx41"]
+[ext_resource type="Script" uid="uid://b4tki1u41dbow" path="res://src/Bridge/Player/PlayerController.cs" id="1_0kad6"]
 [ext_resource type="Script" uid="uid://cdce2ov8y602w" path="res://src/Bridge/WeaponBridge.cs" id="2_0kad6"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_hms8v"]
@@ -14,11 +14,11 @@
 [sub_resource type="Compositor" id="Compositor_0kad6"]
 
 [node name="Player" type="CharacterBody3D" unique_id=595063796 node_paths=PackedStringArray("PlayerCamera", "InteractionRay", "CurrentWeapon", "Equipment") groups=["Player"]]
-script = ExtResource("1_0gx41")
+script = ExtResource("1_0kad6")
 PlayerCamera = NodePath("Node3D/Camera3D")
 InteractionRay = NodePath("Node3D/Camera3D/InteractRayCast")
-CurrentWeapon = NodePath("WeaponNode/AxeNode")
-Equipment = [NodePath("WeaponNode"), NodePath("WeaponNode/ShovelNode"), NodePath("WeaponNode/WateringCanNode"), NodePath("WeaponNode/SeedNode"), NodePath("WeaponNode/ScytheNode"), NodePath("WeaponNode/AxeNode"), NodePath("WeaponNode/PickaxeNode"), NodePath("WeaponNode/FishingRodNode")]
+CurrentWeapon = NodePath("Node3D/Camera3D/AimRay")
+Equipment = [NodePath("WeaponNode/WeaponNode"), NodePath("WeaponNode/ShovelNode"), NodePath("WeaponNode/WateringCanNode"), NodePath("WeaponNode/SeedNode"), NodePath("WeaponNode/ScytheNode"), NodePath("WeaponNode/AxeNode"), NodePath("WeaponNode/PickaxeNode"), NodePath("WeaponNode/FishingRodNode")]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=866314326]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)

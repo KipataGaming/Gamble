@@ -1,27 +1,20 @@
 [gd_scene format=3 uid="uid://ck2xtkraky6jp"]
 
-[ext_resource type="Script" uid="uid://ct6p80qysbmbh" path="res://src/Bridge/StatsUIBridge.cs" id="1_ia1fm"]
 [ext_resource type="PackedScene" uid="uid://gi1klxs8mglq" path="res://src/Scenes/weather_bridge.tscn" id="2_e1bit"]
 [ext_resource type="PackedScene" uid="uid://dupnaaqrhh0l6" path="res://src/Scenes/market_ui.tscn" id="3_xr38o"]
-[ext_resource type="Script" uid="uid://3vny8lho6vxg" path="res://src/Bridge/InventoryUIBridge.cs" id="4_yjx63"]
 [ext_resource type="PackedScene" uid="uid://fpagwytqq7tv" path="res://src/Scenes/BlackjackUI.tscn" id="5_3otxj"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_4xyjv"]
 
 [node name="MainUI" type="CanvasLayer" unique_id=890210926]
 
-[node name="UI" type="Control" parent="." unique_id=880153717 node_paths=PackedStringArray("HealthBar", "StaminaBar", "HealthLabel", "StaminaLabel")]
+[node name="UI" type="Control" parent="." unique_id=880153717]
 layout_mode = 3
 anchors_preset = 0
 offset_left = 359.0
 offset_top = 11.0
 offset_right = 1024.0
 offset_bottom = 155.0
-script = ExtResource("1_ia1fm")
-HealthBar = NodePath("HeatlhBar")
-StaminaBar = NodePath("StaminaBar")
-HealthLabel = NodePath("HealthLabel")
-StaminaLabel = NodePath("StaminaLabel")
 
 [node name="HeatlhBar" type="ProgressBar" parent="UI" unique_id=558234302]
 layout_mode = 0
@@ -85,8 +78,9 @@ grow_vertical = 2
 
 [node name="MarketUI" parent="." unique_id=2105530063 instance=ExtResource("3_xr38o")]
 visible = false
+script = null
 
-[node name="InventoryUI" type="Control" parent="." unique_id=516231743 node_paths=PackedStringArray("InventoryGrid")]
+[node name="InventoryUI" type="Control" parent="." unique_id=516231743]
 visible = false
 layout_mode = 3
 anchor_left = 0.016
@@ -99,8 +93,6 @@ offset_right = 0.33599854
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-script = ExtResource("4_yjx63")
-InventoryGrid = NodePath("InventoryGrid")
 
 [node name="BackgroundPanel" type="Panel" parent="InventoryUI" unique_id=316108719]
 layout_mode = 1

@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://55wg7dtq1523"]
 
-[ext_resource type="Script" uid="uid://bff7n3k82rf7u" path="res://src/Bridge/ResourceNodeBridge.cs" id="1_0pwcp"]
 [ext_resource type="Script" uid="uid://dlycaky2vy30m" path="res://src/Bridge/RandomTreeMesh.cs" id="1_ihfdr"]
+[ext_resource type="Script" uid="uid://blfn5etyjf6rw" path="res://src/Resources/ItemResource.cs" id="1_vfqon"]
 [ext_resource type="ArrayMesh" uid="uid://dq43ihyblrkd2" path="res://src/Resources/Trees/Trunks/trunk_0.mesh" id="2_vfqon"]
 [ext_resource type="ArrayMesh" uid="uid://cgkgmvr61yqiv" path="res://src/Resources/Trees/Trunks/trunk_1.mesh" id="3_w011p"]
 [ext_resource type="ArrayMesh" uid="uid://b7oap3rc85wlu" path="res://src/Resources/Trees/Trunks/trunk_2.mesh" id="4_7ntpt"]
@@ -19,10 +19,13 @@ albedo_color = Color(0.21568628, 0.15686275, 0.050980393, 1)
 albedo_color = Color(0, 0.7372549, 0.33333334, 1)
 
 [node name="Tree" type="Node3D" unique_id=581241713]
-script = ExtResource("1_0pwcp")
+script = ExtResource("1_vfqon")
+Id = "tree"
+Name = "Tree"
+Rarity = 4
 
 [node name="RandomTreeMesh" type="Node3D" parent="." unique_id=47845292]
-transform = Transform3D(-1.8271009, 0, -1.1051345, 0, 2.1353266, 0, 1.1051345, 0, -1.8271009, 0, 0, 0)
+transform = Transform3D(-0.853648, 0, 0.34618917, 0, 0.9211742, 0, -0.34618917, 0, -0.853648, 0, 0, 0)
 script = ExtResource("1_ihfdr")
 TrunkMeshes = Array[ArrayMesh]([ExtResource("2_vfqon"), ExtResource("3_w011p"), ExtResource("4_7ntpt"), ExtResource("5_1aaug")])
 LeafMeshes = Array[ArrayMesh]([ExtResource("6_3bl5r"), ExtResource("7_cugsu"), ExtResource("8_mflxd"), ExtResource("9_i13jt"), ExtResource("10_w7unp")])

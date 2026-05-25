@@ -1,0 +1,10 @@
+[gd_resource type="Resource" format=3 uid="uid://djkc8d1vxrb1w"]
+
+[ext_resource type="Script" uid="uid://blfn5etyjf6rw" path="res://src/Resources/ItemResource.cs" id="1_nmkku"]
+
+[resource]
+script = ExtResource("1_nmkku")
+Id = "wood"
+Name = "Wood"
+Weight = 1.5
+Rarity = 2
